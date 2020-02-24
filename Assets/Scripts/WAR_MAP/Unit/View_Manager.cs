@@ -146,14 +146,18 @@ public class View_Manager : MonoBehaviour {
                 {
                     _T.View_Char.Add(Char.Char_Num);
                 }
-                if (_T.transform.Find("Enemy(Clone)"))
+
+                if (_T.transform.Find("Enemy(Clone)") != null)
                 {
-                    if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
-                    {
-                        Char.MeetEnemy = true;
-                        Enemys.Add(_T.transform.Find("Enemy(Clone)"));
+                    if(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y-_y) > ViewRange) {}
+                    else{
+                        if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
+                        {
+                            Char.MeetEnemy = true;
+                            Enemys.Add(_T.transform.Find("Enemy(Clone)"));
+                        }
+                        _T.transform.Find("Enemy(Clone)").gameObject.layer = 11;
                     }
-                    _T.transform.Find("Enemy(Clone)").gameObject.layer = 11;
                 }
                 
                 _T.Action = Char;

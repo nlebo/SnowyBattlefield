@@ -770,14 +770,16 @@ public class Enemy_Manager : Unit_Manager
                     {
                         if (_T.transform.GetChild(i).CompareTag("Player"))
                         {
+
+                            _T.transform.GetChild(i).GetComponent<Unit_Manager>().View.InView();
+
+                            if(_T.transform.GetChild(i).GetComponent<Unit_Manager>()._Posture == Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) break;  
+                            
                             PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
                             if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
                             seek = true;
 
-                            if (!View_Manager.Enemys.Contains(transform))
-                            {
-                                View_Manager.Enemys.Add(transform);
-                            }
+                           
                         }
 
                     }
