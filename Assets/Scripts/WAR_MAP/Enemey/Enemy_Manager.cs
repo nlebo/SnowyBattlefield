@@ -778,6 +778,7 @@ public class Enemy_Manager : Unit_Manager
                             PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
                             if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
                             seek = true;
+                            
 
                            
                         }
@@ -818,7 +819,7 @@ public class Enemy_Manager : Unit_Manager
     }
 
 
-    public virtual bool CoverCheck(Unit_Manager _Unit)
+    public virtual bool CoverCheck(Unit_Manager _Unit,int behind = 0)
     {
         int X = 0, Y = 0;
         List<Tile> _Cover = new List<Tile>();
@@ -829,7 +830,9 @@ public class Enemy_Manager : Unit_Manager
                 if (_Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.Default)
                     return true;
 
-                X = 1;
+                if(behind != 1)
+                    X = 1; 
+                
             }
             else
             {
@@ -899,29 +902,58 @@ public class Enemy_Manager : Unit_Manager
             }
         }
 
-        if (_where[0] != -1)
-        {
-            realR = Mathf.Abs(x - _Cover[_where[0]].X) + Mathf.Abs(y - _Cover[_where[0]].Y);
-            A_Star(_Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, _Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, 0, 0);
-            cost = 20000;
-            where = 20000;
-            realR = 10000;
-            realDeep = 10000;
-            comple = false;
+        if(behind == 0){
+            if (_where[0] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[0]].X) + Mathf.Abs(y - _Cover[_where[0]].Y);
+                A_Star(_Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, _Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
 
-            return false;
+                return false;
+            }
+            else if (_where[1] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[1]].X) + Mathf.Abs(y - _Cover[_where[1]].Y);
+                A_Star(_Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, _Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
+
+                return false;
+            }
         }
-        else if (_where[1] != -1)
+        else
         {
-            realR = Mathf.Abs(x - _Cover[_where[1]].X) + Mathf.Abs(y - _Cover[_where[1]].Y);
-            A_Star(_Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, _Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, 0, 0);
-            cost = 20000;
-            where = 20000;
-            realR = 10000;
-            realDeep = 10000;
-            comple = false;
+            if (_where[1] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[0]].X) + Mathf.Abs(y - _Cover[_where[0]].Y);
+                A_Star(_Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, _Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
 
-            return false;
+                return false;
+            }
+            else if (_where[0] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[1]].X) + Mathf.Abs(y - _Cover[_where[1]].Y);
+                A_Star(_Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, _Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
+
+                return false;
+            }
         }
 
 
