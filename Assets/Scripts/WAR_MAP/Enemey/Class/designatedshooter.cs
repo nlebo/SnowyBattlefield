@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class designatedshooter : Enemy_Manager
 {
+    public override void SelectClass()
+    {
+        _CLASS = CLASS.DesignatedShooter;
+    }
     public override bool Attack()
     {
         return base.Attack();

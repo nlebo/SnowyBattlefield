@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 public class Enemy_Manager : Unit_Manager
 {
+    public enum CLASS {Default = 0, RifleMan,DesignatedShooter,AssultSoldier,DefensiveScout,AggresiveScout,Sapper};
 	#region VARIABLE
 	public static UnityAction           SEE_ALL;
     public static List<Unit_Manager>    SEE_PLAYER;
@@ -40,6 +41,8 @@ public class Enemy_Manager : Unit_Manager
     public bool                         MovingNow = false;
     public bool                         Watching = false;
     public bool                         Watch_Stop = false;
+
+    public CLASS _CLASS;
 	#endregion
 
 	// Use this for initialization
@@ -129,6 +132,10 @@ public class Enemy_Manager : Unit_Manager
 
     }
 
+    public virtual void SelectClass()
+    {
+        _CLASS = CLASS.Default;
+    }
     public void A_Star(int _x, int _y, int px, int py, int count, int deep)
     {
         int r = 10000;

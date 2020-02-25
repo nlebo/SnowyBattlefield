@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class RifleMan : Enemy_Manager
 {
+    public override void SelectClass()
+    {
+        _CLASS = CLASS.RifleMan;
+    }
     public override bool Attack()
     {
         if (Items[1].count > 0)

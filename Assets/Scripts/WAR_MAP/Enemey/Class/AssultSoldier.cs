@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class AssultSoldier : Enemy_Manager
 {
+
+    public override void SelectClass()
+    {
+        _CLASS = CLASS.AssultSoldier;
+    }
     public override bool Attack()
     {
         return base.Attack();

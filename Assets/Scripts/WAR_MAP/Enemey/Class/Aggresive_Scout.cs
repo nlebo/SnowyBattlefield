@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Agrresive_Scout : Enemy_Manager
+public class Aggresive_Scout : Enemy_Manager
 {
+    public override void SelectClass()
+    {
+        _CLASS = CLASS.AggresiveScout;
+    }
     public override bool Attack()
     {
         return base.Attack();
