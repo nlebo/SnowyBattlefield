@@ -25,6 +25,7 @@ public class AssultSoldier : Enemy_Manager
                 return true;
         }
 
+        
         ChangePos(Posture.Prone);
         return false;
     }

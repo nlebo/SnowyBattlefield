@@ -217,28 +217,28 @@ public class Unit_Manager : MonoBehaviour {
 			else I_Y = 1;
 		}
 
-		if (_Tile.TileMap[x + I_X][y + I_Y] == Tile_Manager.Cover_Kind.HighCover)
+		if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Full)
 		{
 			CoverBonus = 50;
 			Total -= (CoverBonus - PostureBonus);
 		}
-		else if (_Tile.TileMap[x + I_X][y + I_Y] == Tile_Manager.Cover_Kind.HalfCover && (_Posture == Posture.Crouching || _Posture == Posture.Prone))
+		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Half && (_Posture == Posture.Crouching || _Posture == Posture.Prone))
 		{
 			CoverBonus = 30;
 			Total -= (CoverBonus - PostureBonus);
 		}
-		else if (_Tile.TileMap[x + I_X][y + I_Y] == Tile_Manager.Cover_Kind.Debris && _Posture == Posture.Prone)
+		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Low && _Posture == Posture.Prone)
 		{
 			CoverBonus = 70;
 			Total -= (CoverBonus - PostureBonus);
 		}
 
 		//enemy
-		if (_Tile.TileMap[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y] == Tile_Manager.Cover_Kind.HalfCover && _Weapon.Unit._Posture == Posture.Crouching)
+		if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Half && _Weapon.Unit._Posture == Posture.Crouching)
 		{
 			Total += (10 - _Weapon.Unit.PostureBonus);
 		}
-		else if (_Tile.TileMap[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y] == Tile_Manager.Cover_Kind.HighCover)
+		else if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Full)
 		{
 			Total -= _Weapon.Unit.PostureBonus;
 		}

@@ -167,6 +167,7 @@ public class View_Manager : MonoBehaviour {
             }
 
         }
+        
 
         if (Behind_Ob != null)
         {
