@@ -101,7 +101,7 @@ public class Player_Manager : Unit_Manager {
                             {
                                 _T.Kind = Tile_Manager.Cover_Kind.Slit;
                                 _T.View = Tile.View_Kind.Half;
-                                Destroy(_T._Obstacle);
+                                //Destroy(_T._Obstacle);
                                 _T._Obstacle = Instantiate(_T.Obstacle_Manager.Obstacles[7], _T.transform);
                                 _T.direct = Tile.Direct.Any;
                                 Now_Action_Point -= 8;
@@ -128,7 +128,7 @@ public class Player_Manager : Unit_Manager {
                 {
                     if (_T.transform.childCount > 0)
                     {
-                        for (int i = 0; i < transform.childCount; i++)
+                        for (int i = 0; i < _T.transform.childCount; i++)
                         {
                             if (_T.transform.GetChild(i).CompareTag("Player")) return;
                         }

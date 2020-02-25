@@ -120,11 +120,11 @@ MonoBehaviour:
   T: {fileID: 0}
   View: {fileID: 0}
   Inventory: {fileID: 0}
+  Partner: {fileID: 0}
   _Posture: 0
   dir: 0
   Fire_Dir: 0
   _Class: 0
-  Partner: {fileID: 0}
   Pull_Action_Point: 10
   Now_Action_Point: 0
   Now_Move_Point: 0
@@ -135,13 +135,15 @@ MonoBehaviour:
   y: 0
   Char_Num: 0
   Painkiller_Count: 0
+  PostureBonus: 0
+  CoverBonus: 0
   aim: 40
   DynamicVisualAcuity: 0
   Health: 100
+  pressure: 15
   HeadShotPercent: 10
   potential: 1
-  PostureBonus: 0
-  CoverBonus: 0
+  will: 30
   Now_Move: 0
   DigHasty: 0
   Expanding: 0
@@ -149,6 +151,7 @@ MonoBehaviour:
     type: 3}
   Weapons: []
   Items: []
+  Name: 
   _Pos:
   - {fileID: 21300000, guid: 84d2aadbea2fecc41a17f89997305912, type: 3}
   - {fileID: 21300000, guid: eaea4e2b35175294c83e3f298057e1b3, type: 3}

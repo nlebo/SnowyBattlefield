@@ -7,6 +7,7 @@ using UnityEngine.Events;
 public class Enemy_Manager : Unit_Manager
 {
     public enum CLASS {Default = 0, RifleMan,DesignatedShooter,AssultSoldier,DefensiveScout,AggresiveScout,Sapper};
+    
 	#region VARIABLE
 	public static UnityAction           SEE_ALL;
     public static List<Unit_Manager>    SEE_PLAYER;
