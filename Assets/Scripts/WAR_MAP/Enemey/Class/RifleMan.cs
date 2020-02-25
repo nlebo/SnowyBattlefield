@@ -17,4 +17,5 @@ public class RifleMan : Enemy_Manager
     {
         return base.CoverCheck(_Unit);
     }
+    
 }

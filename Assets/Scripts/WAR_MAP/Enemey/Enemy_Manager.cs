@@ -827,17 +827,19 @@ public class Enemy_Manager : Unit_Manager
         {
             if (x - _Unit.x > 0)
             {
-                if (_Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.Default)
-                    return true;
+                // if (_Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.Default)
+                //     return true;
 
-                if(behind != 1)
-                    X = 1; 
-                
+
+                X = 1;
+
             }
             else
             {
-                if (_Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.Default)
-                    return true;
+                // if (_Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.Default)
+                //     return true;
+
+
                 X = -1;
             }
         }
@@ -845,15 +847,16 @@ public class Enemy_Manager : Unit_Manager
         {
             if (y - _Unit.y > 0)
             {
-                if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
-                    return true;
+                // if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
+                //     return true;
+
 
                 Y = 1;
             }
             else
             {
-                if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
-                    return true;
+                // if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
+                //     return true;
 
                 Y = -1;
             }
@@ -928,6 +931,146 @@ public class Enemy_Manager : Unit_Manager
                 return false;
             }
         }
+        else
+        {
+            if (_where[1] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[1]].X) + Mathf.Abs(y - _Cover[_where[1]].Y);
+                A_Star(_Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, _Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
+
+                return false;
+            }
+            else if (_where[0] != -1)
+            {
+                realR = Mathf.Abs(x - _Cover[_where[0]].X) + Mathf.Abs(y - _Cover[_where[0]].Y);
+                A_Star(_Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, _Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, 0, 0);
+                cost = 20000;
+                where = 20000;
+                realR = 10000;
+                realDeep = 10000;
+                comple = false;
+
+                return false;
+            }
+        }
+
+
+
+
+        return true;
+    }
+    public virtual bool CoverCheck(Unit_Manager _Unit)
+    {
+        int X = 0, Y = 0;
+        List<Tile> _Cover = new List<Tile>();
+        if (Mathf.Abs(_Unit.x - x) >= Mathf.Abs(_Unit.y - y))
+        {
+            if (x - _Unit.x > 0)
+            {
+                if (_Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x - 1][y] != Tile_Manager.Cover_Kind.Default)
+                    return true;
+
+                    X = 1; 
+                
+            }
+            else
+            {
+                if (_Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x + 1][y] != Tile_Manager.Cover_Kind.Default)
+                    return true;
+                X = -1;
+            }
+        }
+        else
+        {
+            if (y - _Unit.y > 0)
+            {
+                if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
+                    return true;
+
+                Y = 1;
+            }
+            else
+            {
+                if (_Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[x][y - 1] != Tile_Manager.Cover_Kind.Default)
+                    return true;
+
+                Y = -1;
+            }
+        }
+        int count = -1;
+        for (int _x = x - Pull_Action_Point; _x <= x + Pull_Action_Point; _x++)
+        {
+            count = Mathf.Abs(_x - x);
+            if (_x < 0 || _x >= _Tile.X) continue;
+
+            for (int _y = y - Pull_Action_Point + count; _y <= y + Pull_Action_Point - count; _y++)
+            {
+                if (_y < 0 || _y >= _Tile.Y) continue;
+
+                if (_Tile.TileMap[_x][_y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[_x][_y] != Tile_Manager.Cover_Kind.Default)
+                {
+                    _Cover.Add(_Tile.MY_Tile[_x][_y]);
+                }
+            }
+        }
+
+        int[] _where = new int[2] { -1, -1 };
+        int[] length = new int[2] { 10, 10 };
+        for (int i = 0; i < _Cover.Count; i++)
+        {
+
+            int w = 0; // 0 = behind , 1 = front
+            if (X > 0 && _Cover[i].X < x) w = 1;
+            else if (X < 0 && _Cover[i].X > x) w = 1;
+            else if (Y > 0 && _Cover[i].Y < y) w = 1;
+            else if (Y < 0 && _Cover[i].Y > y) w = 1;
+
+            if (Mathf.Abs(_Cover[i].X - x) + Mathf.Abs(_Cover[i].Y - y) <= length[w])
+            {
+                if (_Tile.MY_Tile[_Cover[i].X + X][_Cover[i].Y + Y].transform.Find("Enemy(Clone)") != null ||
+                    (_Tile.TileMap[_Cover[i].X + X][_Cover[i].Y + Y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[_Cover[i].X + X][_Cover[i].Y + Y] != Tile_Manager.Cover_Kind.Default))
+                {
+                    _Cover.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    length[w] = Mathf.Abs(_Cover[i].X - x) + Mathf.Abs(_Cover[i].Y - y);
+                    _where[w] = i;
+                }
+            }
+        }
+
+        if (_where[0] != -1)
+        {
+            realR = Mathf.Abs(x - _Cover[_where[0]].X) + Mathf.Abs(y - _Cover[_where[0]].Y);
+            A_Star(_Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, _Cover[_where[0]].X + X, _Cover[_where[0]].Y + Y, 0, 0);
+            cost = 20000;
+            where = 20000;
+            realR = 10000;
+            realDeep = 10000;
+            comple = false;
+
+            return false;
+        }
+        else if (_where[1] != -1)
+        {
+            realR = Mathf.Abs(x - _Cover[_where[1]].X) + Mathf.Abs(y - _Cover[_where[1]].Y);
+            A_Star(_Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, _Cover[_where[1]].X + X, _Cover[_where[1]].Y + Y, 0, 0);
+            cost = 20000;
+            where = 20000;
+            realR = 10000;
+            realDeep = 10000;
+            comple = false;
+
+            return false;
+        }
+
         else
         {
             if (_where[1] != -1)

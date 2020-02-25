@@ -14,13 +14,15 @@ public class AssultSoldier : Enemy_Manager
         if (_Posture == Posture.Prone) {
             for(int i=0;i<View_Manager.Enemys.Count;i++)
             {
-                if(View_Manager.Enemys[i] == this.transform)
+                if(View_Manager.Enemys[i] == this.transform && Mathf.Abs(_Unit.x - x) + Mathf.Abs(_Unit.y -y) > 5)
                 {
                     return base.CoverCheck(_Unit,1);
                 }
             }
-
-            return true;
+            if (Mathf.Abs(_Unit.x - x) + Mathf.Abs(_Unit.y - y) > 5)
+                return false;
+            else
+                return true;
         }
 
         ChangePos(Posture.Prone);
