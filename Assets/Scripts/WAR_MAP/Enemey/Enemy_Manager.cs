@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class Enemy_Manager : Unit_Manager
 {
     public enum CLASS {Default = 0, RifleMan,DesignatedShooter,AssultSoldier,DefensiveScout,AggresiveScout,Sapper};
-    
+
 	#region VARIABLE
 	public static UnityAction           SEE_ALL;
     public static List<Unit_Manager>    SEE_PLAYER;
@@ -64,6 +64,17 @@ public class Enemy_Manager : Unit_Manager
 
 
         PLAYER = new List<Unit_Manager>();
+
+        if (Mathf.Abs(_Tile.SpawnPoint[0].x - _Tile.SpawnPoint[1].x) > Mathf.Abs(_Tile.SpawnPoint[0].y - _Tile.SpawnPoint[1].y))
+        {
+            if(_Tile.SpawnPoint[0].x > _Tile.SpawnPoint[1].x) dir = Direction.right;
+            else dir = Direction.left;
+        }
+        else
+        {
+            if(_Tile.SpawnPoint[0].y > _Tile.SpawnPoint[1].y) dir = Direction.up;
+            else dir = Direction.down;
+        }
 
         if (SEE_PLAYER == null) SEE_PLAYER = new List<Unit_Manager>();
         SEE_ALL += Seek;
@@ -1147,4 +1158,47 @@ public class Enemy_Manager : Unit_Manager
         return true;
     }
 
+    public bool Dig()
+    {
+        if (T.Kind == Tile_Manager.Cover_Kind.Default || T.Kind == Tile_Manager.Cover_Kind.CanNot) return Dig_hasty_fighting_position();
+
+        return Dig_Depper();
+    }
+    public override bool Dig_hasty_fighting_position()
+    {
+        if(!base.Dig_hasty_fighting_position()) return false;
+
+        switch (dir)
+        {
+            case Direction.right:
+                _Tile.MY_Tile[x + 1][y].direct = Tile.Direct.Right;
+                _Tile.MY_Tile[x + 1][y]._Obstacle = Instantiate(_Tile.MY_Tile[x + 1][y].Obstacle_Manager.Obstacles[3], _Tile.MY_Tile[x + 1][y].transform);
+                _Tile.MY_Tile[x + 1][y].Kind = Tile_Manager.Cover_Kind.Skimisher;
+                _Tile.MY_Tile[x + 1][y].View = Tile.View_Kind.Low;
+                break;
+            case Direction.left:
+                _Tile.MY_Tile[x - 1][y].direct = Tile.Direct.Left;
+                _Tile.MY_Tile[x - 1][y]._Obstacle = Instantiate(_Tile.MY_Tile[x - 1][y].Obstacle_Manager.Obstacles[4], _Tile.MY_Tile[x - 1][y].transform);
+                _Tile.MY_Tile[x - 1][y].Kind = Tile_Manager.Cover_Kind.Skimisher;
+                _Tile.MY_Tile[x - 1][y].View = Tile.View_Kind.Low;
+                break;
+            case Direction.up:
+                _Tile.MY_Tile[x][y + 1].direct = Tile.Direct.Up;
+                _Tile.MY_Tile[x][y + 1]._Obstacle = Instantiate(_Tile.MY_Tile[x][y + 1].Obstacle_Manager.Obstacles[5], _Tile.MY_Tile[x][y + 1].transform);
+                _Tile.MY_Tile[x][y + 1].Kind = Tile_Manager.Cover_Kind.Skimisher;
+                _Tile.MY_Tile[x][y + 1].View = Tile.View_Kind.Low;
+                break;
+            case Direction.down:
+                _Tile.MY_Tile[x][y - 1].direct = Tile.Direct.Down;
+                _Tile.MY_Tile[x][y - 1]._Obstacle = Instantiate(_Tile.MY_Tile[x][y - 1].Obstacle_Manager.Obstacles[6], _Tile.MY_Tile[x][y - 1].transform);
+                _Tile.MY_Tile[x][y - 1].Kind = Tile_Manager.Cover_Kind.Skimisher;
+                _Tile.MY_Tile[x][y - 1].View = Tile.View_Kind.Low;
+                break;
+        }
+        Now_Action_Point -=7;
+        DigHasty = false;
+
+
+        return true;
+    }
 }
