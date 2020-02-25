@@ -111,7 +111,7 @@ public class View_Manager : MonoBehaviour {
                     {
                         for (int j = _x - 1; j >= x - (ViewRange + 1); j--)
                         {
-                            if (j < 0) break;
+                            if (j < 0 || j >= _Tile.Y) break;
                             Behind_Ob.Add(_Tile.MY_Tile[j][_y]);
                         }
                     }
@@ -119,7 +119,7 @@ public class View_Manager : MonoBehaviour {
                     {
                         for (int j = _x + 1; j <= x + (ViewRange + 1); j++)
                         {
-                            if (j >= _Tile.Y) break;
+                            if (j >= _Tile.Y || j < 0) break;
                             Behind_Ob.Add(_Tile.MY_Tile[j][_y]);
                         }
                     }
@@ -127,7 +127,7 @@ public class View_Manager : MonoBehaviour {
                     {
                         for (int j = _y - 1; j >= y - (ViewRange + 1) + count; j--)
                         {
-                            if (j < 0) break;
+                            if (j < 0 || j >= _Tile.Y) break;
                             Behind_Ob.Add(_Tile.MY_Tile[_x][j]);
                         }
                     }
@@ -135,7 +135,7 @@ public class View_Manager : MonoBehaviour {
                     {
                         for (int j = _y + 1; j <= y + (ViewRange + 1) - count; j++)
                         {
-                            if (j >= _Tile.Y) break;
+                            if (j >= _Tile.Y || j < 0) break;
                             Behind_Ob.Add(_Tile.MY_Tile[_x][j]);
                         }
                     }
@@ -149,7 +149,7 @@ public class View_Manager : MonoBehaviour {
 
                 if (_T.transform.Find("Enemy(Clone)") != null)
                 {
-                    if(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y-_y) > ViewRange) {}
+                    if(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y-_y) > ViewRange /2) {}
                     else{
                         if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
                         {

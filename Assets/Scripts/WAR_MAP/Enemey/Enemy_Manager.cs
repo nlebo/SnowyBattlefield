@@ -80,16 +80,16 @@ public class Enemy_Manager : Unit_Manager
     public void Sight()
     {
 
-        if (T.ViewState == Tile.View_State.InSight)
-        {
-            if (gameObject.layer != 11)
-                gameObject.layer = 11;
-        }
-        else
-        {
-            if (gameObject.layer != 9)
-                gameObject.layer = 9;
-        }
+        // if (T.ViewState == Tile.View_State.InSight)
+        // {
+        //     if (gameObject.layer != 11)
+        //         gameObject.layer = 11;
+        // }
+        // else
+        // {
+        //     if (gameObject.layer != 9)
+        //         gameObject.layer = 9;
+        // }
     }
 
     public override void Death()
@@ -361,6 +361,7 @@ public class Enemy_Manager : Unit_Manager
         SEE_PLAYER.Clear();
         SEE_PLAYER = new List<Unit_Manager>();
         Watching = false;
+        ChangePos(Posture.Prone);
 
         SEE_ALL();
         while (!Watching)
