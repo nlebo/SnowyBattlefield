@@ -477,6 +477,7 @@ public class Player_Manager : Unit_Manager {
         if (!selected) return;
 
         if (NowChose != null) Destroy(NowChose);
+        InitializeButton();
         NowChose = null;
         CanMove = false;
         UI_Manager.Posture.gameObject.SetActive(false);
@@ -535,6 +536,12 @@ public class Player_Manager : Unit_Manager {
             if (i < Items.Count)
                 Items[i].Unselect();
         }
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Weapon_Toast, "Weapon"));
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast,"Action"));
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast,"Posture"));
+        
+
 
         Tile._ReturnOriginal();
         #endregion
@@ -714,6 +721,12 @@ public class Player_Manager : Unit_Manager {
                 if (DigHasty) return;
                 InitializeButton();
                 if (!Now_Move) Tile._ReturnOriginal();
+
+
+                if(UI_Manager.PostureToasting) return;
+
+                UI_Manager.PostureToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Posture_Toast,"Posture"));
                 UI_Manager.Standing_Button.gameObject.SetActive(true);
                 UI_Manager.Crouching_Button.gameObject.SetActive(true);
                 UI_Manager.Proneing_Button.gameObject.SetActive(true);
@@ -727,6 +740,10 @@ public class Player_Manager : Unit_Manager {
                 InitializeButton();
                 if (!Now_Move) Tile._ReturnOriginal();
 
+                if(UI_Manager.WeaponToasting) return;
+
+                UI_Manager.WeaponToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Weapon_Toast,"Weapon"));
                 Weapons[ChoosWeapon].Select();
             });
             UI_Manager.Item_Button.onClick.AddListener(() =>
@@ -734,6 +751,11 @@ public class Player_Manager : Unit_Manager {
                 if (DigHasty) return;
                 if (!Now_Move) Tile._ReturnOriginal();
                 InitializeButton();
+                if(UI_Manager.ItemToasting) return;
+
+                UI_Manager.ItemToasting= true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Item_Toast,"Item"));
+
                 for (int i = 0; i < Items.Count; i++)
                 {
                     UI_Manager.Item[i].gameObject.SetActive(true);
@@ -748,6 +770,12 @@ public class Player_Manager : Unit_Manager {
             UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChoosWeapon].Reload(); });
             UI_Manager.Action_Button.onClick.AddListener(() => {
                 InitializeButton();
+
+
+                if (UI_Manager.ActionToasting) return;
+
+                UI_Manager.ActionToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Action_Toast, "Action"));
 
                 UI_Manager.DigButton.gameObject.SetActive(true);
                 UI_Manager.ExpandButton.gameObject.SetActive(true);

@@ -55,6 +55,13 @@ public class UI_MANAGER : MonoBehaviour {
 	public Image[] Bars;
 	public Image Delete_AP_Bar;
 
+	[Header("ToastBar")]
+	public GameObject Weapon_Toast;
+	public GameObject Item_Toast;
+	public GameObject Action_Toast;
+	public GameObject Posture_Toast;
+
+
 	[Header("ETC")]
 	public string[] RFirstName,RLastName;
 	public string[] EUFirstName,EULastName;
@@ -64,8 +71,22 @@ public class UI_MANAGER : MonoBehaviour {
 	public Camera UICamera;
 
 
+
+
 	float NowFPS;
 	float FPS_Time;
+
+    [HideInInspector]
+	public bool WeaponToasting;
+
+	[HideInInspector]
+	public bool ItemToasting;
+
+	[HideInInspector]
+	public bool ActionToasting;
+
+	[HideInInspector]
+	public bool PostureToasting;
 
 	void Awake()
 	{
@@ -74,6 +95,7 @@ public class UI_MANAGER : MonoBehaviour {
 
 		NowFPS = 0;
 		FPS_Time = 0;
+		WeaponToasting = false;
 		Application.targetFrameRate = 120;
 		StartCoroutine(FPS());
 	}
@@ -172,6 +194,81 @@ public class UI_MANAGER : MonoBehaviour {
 				break;
 		}
 		PostureImage.SetNativeSize();
+	}
+
+	public IEnumerator BarUpToast(GameObject Toast,string What)
+	{
+		if(Toast.activeInHierarchy) 
+		{
+			yield return null;
+		}
+
+        else
+        {
+            RectTransform _Rect = Toast.GetComponent<RectTransform>();
+            Vector2 _Base = _Rect.anchoredPosition;
+            _Rect.anchoredPosition = new Vector2(_Rect.anchoredPosition.x,0);
+
+            yield return null;
+            Toast.SetActive(true);
+            yield return null;
+
+            float TTime = 0;
+            while (TTime < 0.5f)
+            {
+                TTime += Time.deltaTime;
+                _Rect.anchoredPosition = new Vector2(_Rect.anchoredPosition.x, Mathf.Lerp(0, _Base.y, TTime * 2));
+
+                yield return null;
+            }
+
+            _Rect.anchoredPosition = _Base;
+			if(What == "Weapon") WeaponToasting = false;
+			else if(What == "Item") ItemToasting = false;
+			else if(What == "Action")ActionToasting = false;
+			else if(What == "Posture")PostureToasting = false;
+            yield return null;
+        }
+	}
+
+	public IEnumerator BarDownToast(GameObject Toast,string What)
+	{
+		if(!Toast.activeInHierarchy)
+		{
+			yield return null;
+		}
+		else if(What == "Weapon" && WeaponToasting)Toast.SetActive(false);
+		else if(What == "Item" && ItemToasting) Toast.SetActive(false);
+		else if(What == "Action" && ActionToasting)Toast.SetActive(false);
+		else if(What == "Posture"&& PostureToasting)Toast.SetActive(false);
+        else
+        {
+            RectTransform _Rect = Toast.GetComponent<RectTransform>();
+            Vector2 _Base = _Rect.anchoredPosition;
+
+            yield return null;
+            
+
+            float TTime = 0;
+            while (TTime < 0.5f)
+            {
+                TTime += Time.deltaTime;
+                _Rect.anchoredPosition = new Vector2(_Rect.anchoredPosition.x, Mathf.Lerp(_Base.y, 0, TTime * 2));
+
+                yield return null;
+            }
+
+			_Rect.anchoredPosition = new Vector2(_Rect.anchoredPosition.x,0);
+			yield return null;
+
+			Toast.SetActive(false);
+			_Rect.anchoredPosition = _Base;
+			if(What == "Weapon") WeaponToasting = false;
+			else if(What == "Item") ItemToasting = false;
+			else if(What == "Action")ActionToasting = false;
+			else if(What == "Posture")PostureToasting = false;
+            yield return null;
+        }
 	}
 	IEnumerator FPS()
 	{
