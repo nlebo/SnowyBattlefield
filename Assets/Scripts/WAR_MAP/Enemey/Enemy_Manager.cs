@@ -449,10 +449,10 @@ public class Enemy_Manager : Unit_Manager
 
 
 
-            if (A_T[0].Kind == Tile_Manager.Cover_Kind.HalfCover || A_T[0].Kind == Tile_Manager.Cover_Kind.Debris)
+            if (!CanStop(A_T[0],"Obstacle"))
             {
 
-                if (A_T.Count > 1 && (A_T[1].Kind == Tile_Manager.Cover_Kind.HalfCover || A_T[1].Kind == Tile_Manager.Cover_Kind.Debris) && Now_Action_Point >= Now_Move_Point + Now_Move_Point + 1)
+                if (A_T.Count > 1 && !CanStop(A_T[1],"Obstacle") && Now_Action_Point >= Now_Move_Point + Now_Move_Point + 1)
                 {
                 }
                 else
@@ -467,8 +467,7 @@ public class Enemy_Manager : Unit_Manager
                             {
                                 case 0:
                                     if (x - 1 >= 0 &&
-                                        (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x - 1][y].transform.childCount == 0 && px != -1)
+                                        CanStop(_Tile.MY_Tile[x-1][y]) && px != -1)
                                     {
                                         A_T[0] = _Tile.MY_Tile[x - 1][y];
                                         o = 5;
@@ -477,8 +476,7 @@ public class Enemy_Manager : Unit_Manager
                                     break;
                                 case 1:
                                     if (x + 1 < _Tile.X &&
-                                        (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x + 1][y].transform.childCount == 0 && px != 1)
+                                        CanStop(_Tile.MY_Tile[x+1][y]) && px != 1)
                                     {
                                         A_T[0] = _Tile.MY_Tile[x + 1][y];
                                         o = 5;
@@ -487,8 +485,7 @@ public class Enemy_Manager : Unit_Manager
                                     break;
                                 case 2:
                                     if (y - 1 >= 0 &&
-                                        (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x][y - 1].transform.childCount == 0 && py != -1)
+                                        CanStop(_Tile.MY_Tile[x][y-1])&& py != -1)
                                     {
                                         A_T[0] = _Tile.MY_Tile[x][y - 1];
                                         o = 5;
@@ -497,8 +494,7 @@ public class Enemy_Manager : Unit_Manager
                                     break;
                                 case 3:
                                     if (y + 1 < _Tile.Y &&
-                                        (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x][y + 1].transform.childCount == 0 && py != 1)
+                                        CanStop(_Tile.MY_Tile[x][y+1]) && py != 1)
                                     {
                                         A_T[0] = _Tile.MY_Tile[x][y + 1];
                                         o = 5;
@@ -506,8 +502,6 @@ public class Enemy_Manager : Unit_Manager
                                     }
                                     break;
                             }
-
-
 
                             if (o != 5)
                             {
@@ -522,17 +516,6 @@ public class Enemy_Manager : Unit_Manager
                                     break;
                                 }
                             }
-                            else
-                            {
-                                for (int j = 0; j < A_T[0].transform.childCount; j++)
-                                {
-                                    if (A_T[0].transform.GetChild(j).CompareTag("Enemy") || A_T[0].transform.GetChild(j).CompareTag("Player"))
-                                    {
-                                        o = Random.Range(0, 5);
-                                        break;
-                                    }
-                                }
-                            }
 
 
                         }
@@ -543,86 +526,71 @@ public class Enemy_Manager : Unit_Manager
 
             else if (Now_Action_Point <= 0 || A_T.Count == 1)
             {
-                for (int j = 0; j < A_T[0].transform.childCount; j++)
+
+                if (!CanStop(A_T[0]))
                 {
-                    if (A_T[0].transform.GetChild(j).CompareTag("Enemy"))
+                    int o = Random.Range(0, 5);
+                    int count = 0;
+                    while (o != 5)
                     {
-                        int o = Random.Range(0, 5);
-                        int count = 0;
-                        while (o != 5)
+                        switch (o)
                         {
-                            switch (o)
-                            {
-                                case 0:
-                                    if (x - 1 >= 0 &&
-                                        (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x - 1][y].transform.childCount == 0 && px != -1)
-                                    {
-                                        A_T[0] = _Tile.MY_Tile[x - 1][y];
-                                        o = 5;
-                                        change = true;
-                                    }
-                                    break;
-                                case 1:
-                                    if (x + 1 < _Tile.X &&
-                                        (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x + 1][y].transform.childCount == 0 && px != 1)
-                                    {
-                                        A_T[0] = _Tile.MY_Tile[x + 1][y];
-                                        o = 5;
-                                        change = true;
-                                    }
-                                    break;
-                                case 2:
-                                    if (y - 1 >= 0 &&
-                                        (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x][y - 1].transform.childCount == 0 && py != -1)
-                                    {
-                                        A_T[0] = _Tile.MY_Tile[x][y - 1];
-                                        o = 5;
-                                        change = true;
-                                    }
-                                    break;
-                                case 3:
-                                    if (y + 1 < _Tile.Y &&
-                                        (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot ||
-                                        _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default) && _Tile.MY_Tile[x][y + 1].transform.childCount == 0 && py != 1)
-                                    {
-                                        A_T[0] = _Tile.MY_Tile[x][y + 1];
-                                        o = 5;
-                                        change = true;
-                                    }
-                                    break;
-                            }
-
-                            if (o != 5)
-                            {
-                                o++;
-                                if (o >= 5)
-                                    o = 0;
-
-                                if (count >= 5)
+                            case 0:
+                                if (x - 1 >= 0 &&
+                                    CanStop(_Tile.MY_Tile[x-1][y]) && px != -1)
                                 {
-                                    A_T[0] = _Tile.MY_Tile[x + px][y + py];
+                                    A_T[0] = _Tile.MY_Tile[x - 1][y];
+                                    o = 5;
                                     change = true;
-                                    break;
                                 }
                                 break;
-                            }
-                            else
-                            {
-                                for (int q = 0; q < A_T[0].transform.childCount; q++)
+                            case 1:
+                                if (x + 1 < _Tile.X &&
+                                    CanStop(_Tile.MY_Tile[x+1][y]) && px != 1)
                                 {
-                                    if (A_T[0].transform.GetChild(q).CompareTag("Enemy") || A_T[0].transform.GetChild(q).CompareTag("Player"))
-                                    {
-                                        o = Random.Range(0, 5);
-                                        break;
-                                    }
+                                    A_T[0] = _Tile.MY_Tile[x + 1][y];
+                                    o = 5;
+                                    change = true;
                                 }
+                                break;
+                            case 2:
+                                if (y - 1 >= 0 &&
+                                    CanStop(_Tile.MY_Tile[x][y-1]) && py != -1)
+                                {
+                                    A_T[0] = _Tile.MY_Tile[x][y - 1];
+                                    o = 5;
+                                    change = true;
+                                }
+                                break;
+                            case 3:
+                                if (y + 1 < _Tile.Y &&
+                                    CanStop(_Tile.MY_Tile[x][y+1]) && py != 1)
+                                {
+                                    A_T[0] = _Tile.MY_Tile[x][y + 1];
+                                    o = 5;
+                                    change = true;
+                                }
+                                break;
+                        }
+
+                        if (o != 5)
+                        {
+                            o++;
+                            if (o >= 5)
+                                o = 0;
+
+                            if (count >= 5)
+                            {
+                                A_T[0] = _Tile.MY_Tile[x + px][y + py];
+                                change = true;
+                                break;
                             }
                         }
+                        else
+                            break;
                     }
                 }
+
             }
 
             px = x - A_T[0].X;
@@ -687,7 +655,7 @@ public class Enemy_Manager : Unit_Manager
             Seek();
             if (stay > 0) continue;
 
-            if (seek && Watch_Stop) break;
+            if (seek && Watch_Stop && CanStop(T)) break;
             seek = false;
             
             yield return null;
@@ -699,26 +667,26 @@ public class Enemy_Manager : Unit_Manager
         {
             Partner.Now_Action_Point = Now_Action_Point;
             Partner.Now_Move = false;
-            if (_Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.Default)
+            if (!CanStop(_Tile.MY_Tile[Partner.x][Partner.y]))
             {
                 Vector2 PPos;
                 Tile PT;
-                if (x-1 >= 0 && (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default))
+                if (x-1 >= 0 && CanStop(_Tile.MY_Tile[x-1][y]))
                 {
                     Partner.transform.SetParent(_Tile.MY_Tile[x - 1][y].transform);
                     Fire_Dir = Direction.up;
                 }
-                else if (x+1 < _Tile.X && (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default))
+                else if (x+1 < _Tile.X && CanStop(_Tile.MY_Tile[x+1][y]))
                 {
                     Partner.transform.SetParent(_Tile.MY_Tile[x + 1][y].transform);
                     Fire_Dir = Direction.down;
                 }
-                else if (y - 1 >= 0 && (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default))
+                else if (y - 1 >= 0 && CanStop(_Tile.MY_Tile[x][y-1]))
                 {
                     Partner.transform.SetParent(_Tile.MY_Tile[x][y - 1].transform);
                     Fire_Dir = Direction.left;
                 }
-                else if (y + 1 < _Tile.Y && (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default))
+                else if (y + 1 < _Tile.Y && CanStop(_Tile.MY_Tile[x][y+1]))
                 {
                     Partner.transform.SetParent(_Tile.MY_Tile[x][y + 1].transform);
                     Fire_Dir = Direction.right;
@@ -1155,8 +1123,35 @@ public class Enemy_Manager : Unit_Manager
                 break;
 
         }
+
+        if(Partner != null)
+        {
+            Partner._Posture = _Posture;
+            Partner.PostureBonus = PostureBonus;
+        }
         return true;
     }
+    public bool CanStop(Tile CheckTile)
+    {
+        if (CheckTile.transform.Find("Enmey(Clone)") != null || CheckTile.transform.Find("Player(Clone)")) return false;
+        else if (CheckTile.Kind == Tile_Manager.Cover_Kind.Debris || CheckTile.Kind == Tile_Manager.Cover_Kind.HalfCover || CheckTile.Kind == Tile_Manager.Cover_Kind.HighCover) return false;
+
+        return true;
+    }
+
+    public bool CanStop(Tile CheckTile,string What)
+    {
+        if (What == "Unit")
+        {
+            if (CheckTile.transform.Find("Enmey(Clone)") != null || CheckTile.transform.Find("Player(Clone)")) return false;
+        }
+        else if (What == "Obstacle")
+        {
+            if (CheckTile.Kind == Tile_Manager.Cover_Kind.Debris || CheckTile.Kind == Tile_Manager.Cover_Kind.HalfCover || CheckTile.Kind == Tile_Manager.Cover_Kind.HighCover) return false;
+        }
+        return true;
+    }
+
 
     public bool Dig()
     {
