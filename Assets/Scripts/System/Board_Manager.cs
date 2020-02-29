@@ -11,6 +11,8 @@ public class Board_Manager : MonoBehaviour
     public UnityAction Recive_Tactical;
     public List<Unit_Manager> Unit_List;
     public List<int> Sequence;
+    public List<int> SetOne;
+    public List<int> SetTwo;
     public Image[] images;
     List<int> Pick;
     public int Loading = 0;
@@ -32,13 +34,27 @@ public class Board_Manager : MonoBehaviour
 
     public void MakeTurn()
     {
+        SetOne = new List<int>();
         if (set == 0)
         {
-            Sequence.Reverse(0, Sequence.Count);
-            StartTurn();
-            return;
+            for(int i =0;i<Sequence.Count;i++){
+                SetOne.Add(Sequence[i]);
+            }
+            SetOne.Reverse(0,SetOne.Count);
+            
         }
-        Pick = new List<int>();
+        else
+        {
+            for(int i =0;i<SetTwo.Count;i++)
+            {
+                SetOne.Add(SetTwo[i]);
+            }
+        }
+        
+        // Pick = new List<int>();
+
+        SetTwo.Clear();
+        SetTwo = new List<int>();
 
         for (int i = 0; i < Unit_List.Count; i++)
         {
@@ -49,42 +65,23 @@ public class Board_Manager : MonoBehaviour
                 Sequence.Remove(Sequence[pick]);
                 continue;
             }
-            Pick.Add(Sequence[pick]);
+            //Pick.Add(Sequence[pick]);
+            SetTwo.Add(Sequence[pick]);
             Sequence.Remove(Sequence[pick]);
             
         }
         Sequence.Clear();
         Sequence = new List<int>();
 
-        for (int i = 0; i < Unit_List.Count; i++)
+        for(int i =0;i<SetOne.Count;i++)
         {
-            if (Unit_List[i] == null)
-            {
-                Unit_List.RemoveAt(i);
-                i--;
-                continue;
-            }
-            Sequence.Add(i + 1);
+            Sequence.Add(SetOne[i]);
+        }
+        for(int i =0;i<SetTwo.Count;i++)
+        {
+            Sequence.Add(SetTwo[i]);
         }
 
-        for (int i = 0; i < Unit_List.Count; i++)
-        {
-            int pick = Random.Range(0, Sequence.Count);
-
-            if (Unit_List[Sequence[pick] - 1]._Class == Unit_Manager.Class.Second_Gunner)
-            {
-                Sequence.Remove(Sequence[pick]);
-                continue;
-            }
-            Pick.Add(Sequence[pick]);
-            Sequence.Remove(Sequence[pick]);
-
-        }
-
-        Sequence.Clear();
-        Sequence = new List<int>();
-        Sequence = Pick;
-        
         StartTurn();
         
     }
@@ -115,10 +112,12 @@ public class Board_Manager : MonoBehaviour
     public void EndTurn()
     {
         Sequence.RemoveAt(0);
+        SetOne.RemoveAt(0);
 
-        if (Sequence.Count < 1)
+        if (SetOne.Count < 1)
         {
             Debug.Log("Clear");
+            Sequence.Clear();
 
             for (int i = 0; i < Unit_List.Count; i++)
             {
