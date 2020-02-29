@@ -798,8 +798,12 @@ public class Player_Manager : Unit_Manager {
                 if (DigHasty) return;
                 InitializeButton();
 
-                if (!UI_Manager.Inventory.activeInHierarchy)
+                if (!UI_Manager.Inventory.activeInHierarchy){
                     UI_Manager.Inventory.SetActive(true);
+                    UI_Manager.Chest.SetActive(true);
+                    UI_Manager.Vest.SetActive(true);
+                    UI_Manager.Bag.SetActive(true);
+                }
                 else
                     UI_Manager.Inventory.SetActive(false);
             });
