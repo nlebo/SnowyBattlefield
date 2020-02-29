@@ -4299,7 +4299,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 642.6, y: -9.400024}
+  m_AnchoredPosition: {x: 642.60156, y: -9.400391}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &740454025
@@ -7853,7 +7853,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 576.6, y: -30.299988}
+  m_AnchoredPosition: {x: 576.60156, y: -30.300781}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1556855937
@@ -8211,9 +8211,9 @@ MonoBehaviour:
   - "\uC288\uB77C\uC774\uBC84"
   PostureImage: {fileID: 982947734}
   PosSprite:
+  - {fileID: 8121705167873543347, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd, type: 3}
   - {fileID: 8819085062294916723, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd, type: 3}
   - {fileID: -1246298170931193039, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd, type: 3}
-  - {fileID: -2014752484864139192, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd, type: 3}
   _Unit: {fileID: 0}
   UICamera: {fileID: 1613750417}
   WeaponToasting: 0

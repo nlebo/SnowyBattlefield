@@ -635,8 +635,8 @@ public class Enemy_Manager : Unit_Manager
 
 
 
-            if (x > A_T[0].X) dir = Direction.right;
-            else if (x < A_T[0].X) dir = Direction.left;
+            if (x > A_T[0].X) dir = Direction.left;
+            else if (x < A_T[0].X) dir = Direction.right;
             else if (y > A_T[0].Y) dir = Direction.down;
             else if (y < A_T[0].Y) dir = Direction.up;
 
@@ -686,6 +686,7 @@ public class Enemy_Manager : Unit_Manager
         }
 
         Now_Move = false;
+        CoverPosture();
 
         if (Partner != null)
         {
@@ -735,7 +736,7 @@ public class Enemy_Manager : Unit_Manager
 
         }
         MovingNow = true;
-        CoverPosture();
+        
         StopCoroutine(Move_now);
         yield return null;
     }
