@@ -95,6 +95,30 @@ public class Enemy_Manager : Unit_Manager
     public void Sight()
     {
 
+        if (T.ViewState == Tile.View_State.OutSight || T.ViewState == Tile.View_State.UnKnown){
+            if (gameObject.layer != 9)
+                gameObject.layer = 9;
+        }
+        else
+        {
+            if (gameObject.layer != 11)
+                gameObject.layer = 11;
+        }
+        if(_Posture == Posture.Prone && gameObject.layer == 11)
+        {
+            for(int i = 0; i < Tactical_Head.GetPlayerCount();i++)
+            {
+                if(Mathf.Abs(Tactical_Head.GetPlayer(i).x - x) + Mathf.Abs(Tactical_Head.GetPlayer(i).y - y) > Tactical_Head.GetPlayer(i).View.ViewRange / 2)
+                {
+                    if(gameObject.layer != 9) gameObject.layer = 9;
+                }
+                else
+                {
+                    if(gameObject.layer != 11) gameObject.layer = 11;
+                    break;
+                }
+            }
+        }
         // if (T.ViewState == Tile.View_State.InSight)
         // {
         //     if (gameObject.layer != 11)
@@ -380,7 +404,7 @@ public class Enemy_Manager : Unit_Manager
         SEE_PLAYER.Clear();
         SEE_PLAYER = new List<Unit_Manager>();
         Watching = false;
-        ChangePos(Posture.Prone);
+        
 
         SEE_ALL();
         while (!Watching)
@@ -437,7 +461,7 @@ public class Enemy_Manager : Unit_Manager
         yield return null;
 
 
-        for (int i = 0; 0 < Now_Action_Point; i++)
+        for (int i = 0; 1 < Now_Action_Point; i++)
         {
             Now_Action_Point -= Now_Move_Point;
             if (A_T.Count <= 0) break;
@@ -655,7 +679,7 @@ public class Enemy_Manager : Unit_Manager
             Seek();
             if (stay > 0) continue;
 
-            if (seek && Watch_Stop && CanStop(T)) break;
+            if (seek && Watch_Stop && CanStop(T))break;
             seek = false;
             
             yield return null;
@@ -711,7 +735,7 @@ public class Enemy_Manager : Unit_Manager
 
         }
         MovingNow = true;
-
+        CoverPosture();
         StopCoroutine(Move_now);
         yield return null;
     }
@@ -1195,5 +1219,45 @@ public class Enemy_Manager : Unit_Manager
 
 
         return true;
+    }
+
+    public virtual void CoverPosture()
+    {
+        switch (dir)
+        {
+            case Direction.right:
+                if (x + 1 > 0 && x + 1 < _Tile.X && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low)
+                    ChangePos(Posture.Prone);
+                else if (_Tile.MY_Tile[x + 1][y] != null && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Half)
+                    ChangePos(Posture.Crouching);
+                else
+                    ChangePos(Posture.Standing);
+                break;
+            case Direction.left:
+                if (x - 1 > 0 && x - 1 < _Tile.X && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low)
+                    ChangePos(Posture.Prone);
+                else if (_Tile.MY_Tile[x - 1][y] != null && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Half)
+                    ChangePos(Posture.Crouching);
+                else
+                    ChangePos(Posture.Standing);
+                break;
+            case Direction.up:
+                if (y + 1 > 0 && y + 1 < _Tile.Y && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low)
+                    ChangePos(Posture.Prone);
+                else if (_Tile.MY_Tile[x][y + 1] != null && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Half)
+                    ChangePos(Posture.Crouching);
+                else
+                    ChangePos(Posture.Standing);
+                break;
+            case Direction.down:
+                if (y - 1 > 0 && y - 1 < _Tile.Y && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low)
+                    ChangePos(Posture.Prone);
+                else if (_Tile.MY_Tile[x][y - 1] != null && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Half)
+                    ChangePos(Posture.Crouching);
+                else
+                    ChangePos(Posture.Standing);
+                break;
+
+        }
     }
 }

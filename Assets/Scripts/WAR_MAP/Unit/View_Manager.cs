@@ -156,7 +156,7 @@ public class View_Manager : MonoBehaviour {
                             Char.MeetEnemy = true;
                             Enemys.Add(_T.transform.Find("Enemy(Clone)"));
                         }
-                        _T.transform.Find("Enemy(Clone)").gameObject.layer = 11;
+                        _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>().Sight();
                     }
                 }
                 
