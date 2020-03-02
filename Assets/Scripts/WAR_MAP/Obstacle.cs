@@ -21,10 +21,8 @@ public class Obstacle : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
 
-        if (gameObject.layer != transform.parent.gameObject.layer && transform.parent.gameObject.layer == 8)
-            gameObject.layer = 12;
-        else if (gameObject.layer != transform.parent.gameObject.layer)
-            gameObject.layer = 9;
+        if (gameObject.layer != transform.parent.gameObject.layer)
+            gameObject.layer = transform.parent.gameObject.layer;
         M.color = new Color(M.color.r * 0.7f + P.color.r * 0.3f, M.color.g * 0.7f + P.color.g * 0.3f, M.color.b * 0.7f + P.color.g * 0.3f, P.color.a);
 
     }

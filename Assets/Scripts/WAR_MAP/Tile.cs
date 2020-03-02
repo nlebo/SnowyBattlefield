@@ -271,24 +271,21 @@ public class Tile : MonoBehaviour{
     {
 		//Action = GameObject.Find("Player(Clone)").GetComponent<Action_Manager>();
 		//Debug.Log(Action.x + "/" + Action.y + " - " + X +"/" + Y + " = " + (Mathf.Abs(Action.x - X) + Mathf.Abs(Action.y - Y)));
-		// if (Mathf.Abs(_Action.x - X) + Mathf.Abs(_Action.y - Y) >= _Action.View.ViewRange)
-		// {
+		if (Mathf.Abs(_Action.x - X) + Mathf.Abs(_Action.y - Y) >= _Action.View.ViewRange)
+		{
             
-		// 	if (View_Char.Contains(_Action.Char_Num)) View_Char.Remove(_Action.Char_Num);
-		// 	UnView();
-		// }
+			if (View_Char.Contains(_Action.Char_Num)) View_Char.Remove(_Action.Char_Num);
+			UnView();
+		}
 
-        // if ((_Action.dir == Unit_Manager.Direction.left && X > _Action.x) ||
-        //     (_Action.dir == Unit_Manager.Direction.right && X < _Action.x) ||
-        //     (_Action.dir == Unit_Manager.Direction.down && Y > _Action.y) ||
-        //     (_Action.dir == Unit_Manager.Direction.up && Y < _Action.y))
-        // {
-        //     if (View_Char.Contains(_Action.Char_Num)) View_Char.Remove(_Action.Char_Num);
-        //     UnView();
-        // }
-
-        if (View_Char.Contains(_Action.Char_Num)) View_Char.Remove(_Action.Char_Num);
+        if ((_Action.dir == Unit_Manager.Direction.left && X > _Action.x) ||
+            (_Action.dir == Unit_Manager.Direction.right && X < _Action.x) ||
+            (_Action.dir == Unit_Manager.Direction.down && Y > _Action.y) ||
+            (_Action.dir == Unit_Manager.Direction.up && Y < _Action.y))
+        {
+            if (View_Char.Contains(_Action.Char_Num)) View_Char.Remove(_Action.Char_Num);
             UnView();
+        }
 
         //Action = null;
     }

@@ -169,7 +169,6 @@ MonoBehaviour:
   MovingNow: 0
   Watching: 0
   Watch_Stop: 0
-  _CLASS: 0
 --- !u!70 &2489259303713767156
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
