@@ -107,7 +107,7 @@ public class HeavyWeapon_Manager : Weapon_Manager {
 						}
 
 						Unit.Tile_InSighted = null;
-						Unit.View.InView();
+						Unit.View.TestInView();
 
 						Unit.Now_Action_Point -= 3;
 						if (Btn2) Unit.Now_Action_Point -= 2;

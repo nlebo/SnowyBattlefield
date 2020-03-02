@@ -16,7 +16,7 @@ public class SpawnPocket : MonoBehaviour
 	int radius = 6;
 
 	public static int MaxEnemyCount = 5;
-	public static int MaxPlayerCount = 5;
+	public static int MaxPlayerCount = 1;
 
 	public GameObject Player;
 	public GameObject Enemy;

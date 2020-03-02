@@ -16,7 +16,7 @@ public class Unit_Manager : MonoBehaviour {
 	public Unit_Manager					Partner;
 
 	public UnityAction<Unit_Manager>	Tile_InSighted;
-	public UnityAction<Unit_Manager>	Tile_InSighted2;
+	public UnityAction<Unit_Manager>	Unview_Sighted;
 	
 
 

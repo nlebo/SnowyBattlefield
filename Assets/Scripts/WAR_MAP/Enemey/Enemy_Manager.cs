@@ -784,7 +784,7 @@ public class Enemy_Manager : Unit_Manager
                         if (_T.transform.GetChild(i).CompareTag("Player"))
                         {
 
-                            _T.transform.GetChild(i).GetComponent<Unit_Manager>().View.InView();
+                            _T.transform.GetChild(i).GetComponent<Unit_Manager>().View.TestInView();
 
                             if(_T.transform.GetChild(i).GetComponent<Unit_Manager>()._Posture == Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) break;  
                             
