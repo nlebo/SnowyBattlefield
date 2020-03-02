@@ -111,7 +111,7 @@ public class Granade : Item_Manager {
 						}
 
 						Unit.Tile_InSighted = null;
-						Unit.View.InView();
+						Unit.View.TestInView();
 
 						Unit.Now_Action_Point -= 3;
 						Unit.DrawActionPoint();
