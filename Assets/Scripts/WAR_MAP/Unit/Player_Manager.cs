@@ -635,7 +635,7 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.PosImageChange(_Posture);
         Tile_InSighted(this);
 
-        View.InView();
+        View.TestInView();
 
         UI_Manager.Standing_Button.gameObject.SetActive(false);
         UI_Manager.Crouching_Button.gameObject.SetActive(false);
@@ -943,19 +943,20 @@ public class Player_Manager : Unit_Manager {
 				//Partner.Tile_InSighted = Partner.Tile_InSighted2;
 				//Partner.Tile_InSighted2 = null;
 
-				Partner.View.InView();
+				Partner.View.TestInView();
 			}
 
             View.x = x;
             View.y = y;
 			T = A_T[i];
 
-            Tile_InSighted(this);
+            if (Tile_InSighted != null)
+                Tile_InSighted(this);
             //Tile_InSighted = null;
             //Tile_InSighted = Tile_InSighted2;
             //Tile_InSighted2 = null;
 
-            View.InView();
+            View.TestInView();
             if (MeetEnemy)
             {
                 MeetEnemy = false;
@@ -1017,7 +1018,7 @@ public class Player_Manager : Unit_Manager {
 				//Partner.Tile_InSighted2 = null;
 				Partner.Now_Move = false;
 
-				Partner.View.InView();
+				Partner.View.TestInView();
 			}
 			
 		}
