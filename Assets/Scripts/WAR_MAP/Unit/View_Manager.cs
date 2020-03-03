@@ -193,14 +193,14 @@ public class View_Manager : MonoBehaviour {
             switch (Char.dir)
             {
                 case Player_Manager.Direction.left:
-                    if (y + i < 0 || y + i >= _Tile.Y)
+                    if (y + i < 0 || y + i >= _Tile.Y || _Tile.MY_Tile[x-1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
                         return;
                     if (i == -2) LeftSight(1, x, y + i, Char.dir,0);
                     else if (i == 2) RightSight(1, x, y + i, Char.dir,0);
                     else CenterSight(1, x, y + i, Char.dir);
                     break;
                 case Player_Manager.Direction.right:
-                    if (y - i < 0 || y - i >= _Tile.Y)
+                    if (y - i < 0 || y - i >= _Tile.Y || _Tile.MY_Tile[x+1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
                         return;
 
                     if (i == -2) LeftSight(1, x, y - i, Char.dir,0);
@@ -208,14 +208,14 @@ public class View_Manager : MonoBehaviour {
                     else CenterSight(1, x, y - i, Char.dir);
                     break;
                 case Player_Manager.Direction.up:
-                    if (x + i < 0 || x + i >= _Tile.X)
+                    if (x + i < 0 || x + i >= _Tile.X || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
                         return;
                     if (i == -2) LeftSight(1, x + i, y, Char.dir,0);
                     else if (i == 2) RightSight(1, x + i, y, Char.dir,0);
                     else CenterSight(1, x + i, y, Char.dir);
                     break;
                 case Player_Manager.Direction.down:
-                    if (x - i < 0 || x - i >= _Tile.X)
+                    if (x - i < 0 || x - i >= _Tile.X || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
                         return;
                     if (i == -2) LeftSight(1, x - i, y, Char.dir,0);
                     else if (i == 2) RightSight(1, x - i, y, Char.dir,0);
@@ -322,8 +322,7 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) { }
-            else
+            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
             {
                 if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
                 {
@@ -464,8 +463,7 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) { }
-            else
+            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
             {
                 if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
                 {
@@ -641,8 +639,7 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>()._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) { }
-            else
+            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
             {
                 if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
                 {
@@ -982,11 +979,36 @@ public class View_Manager : MonoBehaviour {
                 case Player_Manager.Direction.down:
                     if (y - 1 < 0) return;
 
-                    UnviewRightSight(depth + 1, x, y - 1, dir,count + 1);
+                    UnviewRightSight(depth + 1, x, y - 1, dir, count + 1);
                     break;
 
             }
         }
-   }
+    }
 
+
+    public bool CheckFindEnemy(Unit_Manager _Enemy, int _x, int _y)
+    {
+        if (_Enemy._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) return false;
+        else if (_Enemy._Posture == Unit_Manager.Posture.Prone)
+        {
+            switch (Char.dir)
+            {
+                case Unit_Manager.Direction.left:
+                    if (_Tile.MY_Tile[_x + 1][_y].View == Tile.View_Kind.Half || _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.right:
+                    if (_Tile.MY_Tile[_x - 1][_y].View == Tile.View_Kind.Half || _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.up:
+                    if (_Tile.MY_Tile[_x][_y - 1].View == Tile.View_Kind.Half || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.down:
+                    if (_Tile.MY_Tile[_x][_y + 1].View == Tile.View_Kind.Half || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low) return false;
+                    break;
+            }
+        }
+
+        return true;
+    }
 }

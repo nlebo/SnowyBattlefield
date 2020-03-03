@@ -22,6 +22,7 @@ public class Enemy_Manager : Unit_Manager
     List<Unit_Manager>                  PLAYER;
     List<Tile>                          A_T = null;
     List<Vector2Int>                    Behind_Ob;
+    List<Unit_Manager>                  UnSight_Player;
 
     int                                 beforeLayer;
     Vector2                             Goal;
@@ -108,7 +109,7 @@ public class Enemy_Manager : Unit_Manager
         {
             for(int i = 0; i < Tactical_Head.GetPlayerCount();i++)
             {
-                if(Mathf.Abs(Tactical_Head.GetPlayer(i).x - x) + Mathf.Abs(Tactical_Head.GetPlayer(i).y - y) > Tactical_Head.GetPlayer(i).View.ViewRange / 2)
+                if(Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this,x,y))
                 {
                     if(gameObject.layer != 9) gameObject.layer = 9;
                 }
@@ -742,65 +743,47 @@ public class Enemy_Manager : Unit_Manager
     }
     public void Seek()
     {
-        seek = false;
         PLAYER.Clear();
-        PLAYER = new List<Unit_Manager>();
-        int count = -1;
-        bool Continue = false;
-
-        if (Behind_Ob != null) Behind_Ob.Clear();
-
-
-        for (int _x = x - (ViewRange + 1); _x <= x + ViewRange + 1; _x++)
+        UnSight_Player.Clear();
+        Unview_Sighted = null;
+        seek = false;
+        for (int i = -2; i < 3; i++)
         {
-            count = Mathf.Abs(_x - x);
-
-            if (count > ViewRange) continue;
-            if (_x < 0 || _x >= _Tile.X) continue;
-
-            for (int _y = y - (ViewRange + 1) + count; _y <= y + (ViewRange + 1) - count; _y++)
+            switch (dir)
             {
+                case Player_Manager.Direction.left:
+                    if (y + i < 0 || y + i >= _Tile.Y || _Tile.MY_Tile[x-1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        return;
+                    if (i == -2) LeftSight(1, x, y + i, dir,0);
+                    else if (i == 2) RightSight(1, x, y + i, dir,0);
+                    else CenterSight(1, x, y + i, dir);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (y - i < 0 || y - i >= _Tile.Y || _Tile.MY_Tile[x+1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        return;
 
-                if (Mathf.Abs(_y - y) > ViewRange) continue;
-                if (_y < 0 || _y >= _Tile.Y) continue;
-
-                for (int i = 0; i < Behind_Ob.Count; i++)
-                {
-                    if (_x == Behind_Ob[i].x && _y == Behind_Ob[i].y)
-                    {
-                        Continue = true;
-                        break;
-                    }
-                }
-
-                if (Continue) continue;
-
-                Tile _T = _Tile.MY_Tile[_x][_y];
-                
-                if (_T.transform.childCount > 0)
-                {
-                    for (int i = 0; i < _T.transform.childCount; i++)
-                    {
-                        if (_T.transform.GetChild(i).CompareTag("Player"))
-                        {
-
-                            _T.transform.GetChild(i).GetComponent<Unit_Manager>().View.TestInView();
-
-                            if(_T.transform.GetChild(i).GetComponent<Unit_Manager>()._Posture == Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) break;  
-                            
-                            PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
-                            if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
-                            seek = true;
-                            
-
-                           
-                        }
-
-                    }
-                }
-
+                    if (i == -2) LeftSight(1, x, y - i, dir,0);
+                    else if (i == 2) RightSight(1, x, y - i, dir,0);
+                    else CenterSight(1, x, y - i, dir);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x + i < 0 || x + i >= _Tile.X || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        return;
+                    if (i == -2) LeftSight(1, x + i, y, dir,0);
+                    else if (i == 2) RightSight(1, x + i, y, dir,0);
+                    else CenterSight(1, x + i, y, dir);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x - i < 0 || x - i >= _Tile.X || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        return;
+                    if (i == -2) LeftSight(1, x - i, y, dir,0);
+                    else if (i == 2) RightSight(1, x - i, y, dir,0);
+                    else CenterSight(1, x - i, y, dir);
+                    break;
             }
+
         }
+        Un_Sight();
         Sight();
         Watching = true;
     }
@@ -1186,7 +1169,7 @@ public class Enemy_Manager : Unit_Manager
     }
     public override bool Dig_hasty_fighting_position()
     {
-        if(!base.Dig_hasty_fighting_position()) return false;
+        if (!base.Dig_hasty_fighting_position()) return false;
 
         switch (dir)
         {
@@ -1215,7 +1198,7 @@ public class Enemy_Manager : Unit_Manager
                 _Tile.MY_Tile[x][y - 1].View = Tile.View_Kind.Low;
                 break;
         }
-        Now_Action_Point -=7;
+        Now_Action_Point -= 7;
         DigHasty = false;
 
 
@@ -1229,7 +1212,7 @@ public class Enemy_Manager : Unit_Manager
             case Direction.right:
                 if (x + 1 > 0 && x + 1 < _Tile.X && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low)
                     ChangePos(Posture.Prone);
-                else if (_Tile.MY_Tile[x + 1][y] != null && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Half)
+                else if (x + 1 > 0 && x + 1 < _Tile.X && _Tile.MY_Tile[x + 1][y] != null && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Half)
                     ChangePos(Posture.Crouching);
                 else
                     ChangePos(Posture.Standing);
@@ -1237,7 +1220,7 @@ public class Enemy_Manager : Unit_Manager
             case Direction.left:
                 if (x - 1 > 0 && x - 1 < _Tile.X && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low)
                     ChangePos(Posture.Prone);
-                else if (_Tile.MY_Tile[x - 1][y] != null && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Half)
+                else if (x - 1 > 0 && x - 1 < _Tile.X && _Tile.MY_Tile[x - 1][y] != null && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Half)
                     ChangePos(Posture.Crouching);
                 else
                     ChangePos(Posture.Standing);
@@ -1245,7 +1228,7 @@ public class Enemy_Manager : Unit_Manager
             case Direction.up:
                 if (y + 1 > 0 && y + 1 < _Tile.Y && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low)
                     ChangePos(Posture.Prone);
-                else if (_Tile.MY_Tile[x][y + 1] != null && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Half)
+                else if (y + 1 > 0 && y + 1 < _Tile.Y && _Tile.MY_Tile[x][y + 1] != null && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Half)
                     ChangePos(Posture.Crouching);
                 else
                     ChangePos(Posture.Standing);
@@ -1253,7 +1236,7 @@ public class Enemy_Manager : Unit_Manager
             case Direction.down:
                 if (y - 1 > 0 && y - 1 < _Tile.Y && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low)
                     ChangePos(Posture.Prone);
-                else if (_Tile.MY_Tile[x][y - 1] != null && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Half)
+                else if (y - 1 > 0 && y - 1 < _Tile.Y && _Tile.MY_Tile[x][y - 1] != null && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Half)
                     ChangePos(Posture.Crouching);
                 else
                     ChangePos(Posture.Standing);
@@ -1261,4 +1244,736 @@ public class Enemy_Manager : Unit_Manager
 
         }
     }
+
+    private void CenterSight(int depth, int _x, int _y, Player_Manager.Direction dir)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[_x][_y];
+        if (_T.transform.childCount > 0)
+        {
+            for (int i = 0; i < _T.transform.childCount; i++)
+            {
+                if (_T.transform.GetChild(i).CompareTag("Player"))
+                {
+                    Unit_Manager _P = _T.transform.GetChild(i).GetComponent<Unit_Manager>();
+                    _P.View.TestInView();
+
+                    if (!CheckFindEnemy(_P,_x,_y)) break;
+
+                    PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
+                    if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
+                    seek = true;
+
+
+
+                }
+
+            }
+        }
+
+        if (_T.View == Tile.View_Kind.Full)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+
+                    if (y > _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y + 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_x - 1 > 0 && _y + 1 < _Tile.Y) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.right:
+
+                    if (y > _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y + 1 < _Tile.Y) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                        if (_x + 1 < _Tile.X && _y + 1 > 0) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x > _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x > _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    break;
+
+            }
+        }
+
+        switch (dir)
+        {
+            case Player_Manager.Direction.left:
+                if (_x - 1 < 0)
+                    return;
+
+                CenterSight(depth + 1, _x - 1, _y, dir);
+                break;
+            case Player_Manager.Direction.right:
+                if (_x + 1 >= _Tile.X) return;
+
+                CenterSight(depth + 1, _x + 1, _y, dir);
+                break;
+            case Player_Manager.Direction.up:
+                if (_y + 1 >= _Tile.Y) return;
+
+                CenterSight(depth + 1, _x, _y + 1, dir);
+                break;
+            case Player_Manager.Direction.down:
+                if (_y - 1 < 0) return;
+
+                CenterSight(depth + 1, _x, _y - 1, dir);
+                break;
+
+        }
+
+
+    }
+    private void LeftSight(int depth, int _x, int _y, Player_Manager.Direction dir, int count)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[_x][_y];
+        for (int i = 0; i < _T.transform.childCount; i++)
+        {
+            if (_T.transform.GetChild(i).CompareTag("Player"))
+            {
+                Unit_Manager _P = _T.transform.GetChild(i).GetComponent<Unit_Manager>();
+                _P.View.TestInView();
+
+                if (!CheckFindEnemy(_P, _x, _y)) break;
+
+                PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
+                if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
+                seek = true;
+
+
+
+            }
+
+        }
+
+        if (_T.View == Tile.View_Kind.Full)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+
+                    if (y > _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y + 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_x - 1 > 0 && _y + 1 < _Tile.Y) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.right:
+
+                    if (y > _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y + 1 < _Tile.Y) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                        if (_x + 1 < _Tile.X && _y + 1 > 0) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x > _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x > _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    break;
+
+            }
+        }
+
+        if (count == 2 && depth != 1)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (_y - 1 >= 0)
+                        LeftSight(depth, _x, _y - 1, dir, 0);
+
+                    if (_x - 1 < 0) return;
+                    CenterSight(depth + 1, _x - 1, _y, dir);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (_y + 1 < _Tile.Y)
+                        LeftSight(depth, _x, _y + 1, dir, 0);
+
+                    if (_x + 1 >= _Tile.X) return;
+                    CenterSight(depth + 1, _x + 1, _y, dir);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (_x - 1 >= 0)
+                        LeftSight(depth, _x - 1, _y, dir, 0);
+
+                    if (_y + 1 >= _Tile.Y) return;
+                    CenterSight(depth + 1, _x, _y + 1, dir);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (_x + 1 < _Tile.X)
+                        LeftSight(depth, _x + 1, _y, dir, 0);
+
+                    if (_y - 1 < 0) return;
+                    CenterSight(depth + 1, _x, _y - 1, dir);
+                    break;
+            }
+        }
+        else
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (_x - 1 < 0)
+                        return;
+
+                    LeftSight(depth + 1, _x - 1, _y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (_x + 1 >= _Tile.X) return;
+
+                    LeftSight(depth + 1, _x + 1, _y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (_y + 1 >= _Tile.Y) return;
+
+                    LeftSight(depth + 1, _x, _y + 1, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (_y - 1 < 0) return;
+
+                    LeftSight(depth + 1, _x, _y - 1, dir, count + 1);
+                    break;
+
+            }
+        }
+    }
+    private void RightSight(int depth, int _x, int _y, Player_Manager.Direction dir, int count)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[_x][_y];
+        for (int i = 0; i < _T.transform.childCount; i++)
+        {
+            if (_T.transform.GetChild(i).CompareTag("Player"))
+            {
+                Unit_Manager _P = _T.transform.GetChild(i).GetComponent<Unit_Manager>();
+                _P.View.TestInView();
+
+                if (!CheckFindEnemy(_P, _x, _y)) break;
+
+                PLAYER.Add(_T.transform.GetChild(i).GetComponent<Unit_Manager>());
+                if (!SEE_PLAYER.Contains(PLAYER[PLAYER.Count - 1])) SEE_PLAYER.Add(PLAYER[PLAYER.Count - 1]);
+                seek = true;
+
+
+
+            }
+
+        }
+
+
+        if (_T.View == Tile.View_Kind.Full)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+
+                    if (y > _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y + 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x - 1 > 0) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x - 1 > 0 && _y - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_x - 1 > 0 && _y + 1 < _Tile.Y) UnviewRightSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.right:
+
+                    if (y > _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else if (y < _y)
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x - 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y + 1 < _Tile.Y) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_x + 1 < _Tile.X) UnviewCenterSight(depth + 1, _x + 1, _y, dir);
+                        if (_x + 1 < _Tile.X && _y - 1 > 0) UnviewRightSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                        if (_x + 1 < _Tile.X && _y + 1 > 0) UnviewLeftSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x > _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y + 1 < _Tile.Y) UnviewCenterSight(depth + 1, _x, _y + 1, dir);
+                        if (_y + 1 < _Tile.Y && _x - 1 > 0) UnviewLeftSight(depth + 1, _x - 1, _y + 1, dir, 1);
+                        if (_y + 1 < _Tile.Y && _x + 1 < _Tile.X) UnviewRightSight(depth + 1, _x + 1, _y + 1, dir, 1);
+                    }
+
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x > _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                    }
+                    else if (x < _x)
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    else
+                    {
+                        if (_y - 1 >= 0) UnviewCenterSight(depth + 1, _x, _y - 1, dir);
+                        if (_y - 1 >= 0 && _x - 1 > 0) UnviewRightSight(depth + 1, _x - 1, _y - 1, dir, 1);
+                        if (_y - 1 >= 0 && _x + 1 < _Tile.X) UnviewLeftSight(depth + 1, _x + 1, _y - 1, dir, 1);
+                    }
+                    break;
+
+            }
+        }
+
+        if (count == 2 && depth != 1)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (_y + 1 < _Tile.Y)
+                        RightSight(depth, _x, _y + 1, dir, 0);
+
+                    if (_x - 1 < 0) return;
+                    CenterSight(depth + 1, _x - 1, _y, dir);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (_y - 1 >= 0)
+                        RightSight(depth, _x, _y - 1, dir, 0);
+
+                    if (_x + 1 >= _Tile.X) return;
+                    CenterSight(depth + 1, _x + 1, _y, dir);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (_x + 1 < _Tile.X)
+                        RightSight(depth, _x + 1, _y, dir, 0);
+
+                    if (_y + 1 >= _Tile.Y) return;
+                    CenterSight(depth + 1, _x, _y + 1, dir);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (_x - 1 >= 0)
+                        RightSight(depth, _x - 1, _y, dir, 0);
+
+                    if (_y - 1 < 0) return;
+                    CenterSight(depth + 1, _x, _y - 1, dir);
+                    break;
+            }
+        }
+        else
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (_x - 1 < 0)
+                        return;
+
+                    RightSight(depth + 1, _x - 1, _y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (_x + 1 >= _Tile.X) return;
+
+                    RightSight(depth + 1, _x + 1, _y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (_y + 1 >= _Tile.Y) return;
+
+                    RightSight(depth + 1, _x, _y + 1, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (_y - 1 < 0) return;
+
+                    RightSight(depth + 1, _x, _y - 1, dir, count + 1);
+                    break;
+
+            }
+        }
+    }
+
+
+    private void UnviewCenterSight(int depth, int x, int y, Player_Manager.Direction dir)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[x][y];
+        if(_T.transform.Find("Player(Clone)") != null)
+        {
+            UnSight_Player.Add(_T.transform.Find("Player(Clone)").GetComponent<Unit_Manager>());
+        }
+
+
+        switch (dir)
+        {
+            case Player_Manager.Direction.left:
+                if (x - 1 < 0)
+                    return;
+
+                UnviewCenterSight(depth + 1, x - 1, y, dir);
+                break;
+            case Player_Manager.Direction.right:
+                if (x + 1 >= _Tile.X) return;
+
+                UnviewCenterSight(depth + 1, x + 1, y, dir);
+                break;
+            case Player_Manager.Direction.up:
+                if (y + 1 >= _Tile.Y) return;
+
+                UnviewCenterSight(depth + 1, x, y + 1, dir);
+                break;
+            case Player_Manager.Direction.down:
+                if (y - 1 < 0) return;
+
+                UnviewCenterSight(depth + 1, x, y - 1, dir);
+                break;
+
+        }
+
+
+    }
+    private void UnviewLeftSight(int depth, int x, int y, Player_Manager.Direction dir, int count)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[x][y];
+         if(_T.transform.Find("Player(Clone)") != null)
+        {
+            UnSight_Player.Add(_T.transform.Find("Player(Clone)").GetComponent<Unit_Manager>());
+        }
+
+        if (count == 2 && depth != 1)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (y - 1 >= 0)
+                        UnviewLeftSight(depth, x, y - 1, dir, 0);
+
+                    if (x - 1 < 0) return;
+                    UnviewCenterSight(depth + 1, x - 1, y, dir);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (y + 1 < _Tile.Y)
+                        UnviewLeftSight(depth, x, y + 1, dir, 0);
+
+                    if (x + 1 >= _Tile.X) return;
+                    UnviewCenterSight(depth + 1, x + 1, y, dir);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x - 1 >= 0)
+                        UnviewLeftSight(depth, x - 1, y, dir, 0);
+
+                    if (y + 1 >= _Tile.Y) return;
+                    UnviewCenterSight(depth + 1, x, y + 1, dir);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x + 1 < _Tile.X)
+                        UnviewLeftSight(depth, x + 1, y, dir, 0);
+
+                    if (y - 1 < 0) return;
+                    UnviewCenterSight(depth + 1, x, y - 1, dir);
+                    break;
+            }
+        }
+        else
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (x - 1 < 0)
+                        return;
+
+                    UnviewLeftSight(depth + 1, x - 1, y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (x + 1 >= _Tile.X) return;
+
+                    UnviewLeftSight(depth + 1, x + 1, y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (y + 1 >= _Tile.Y) return;
+
+                    UnviewLeftSight(depth + 1, x, y + 1, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (y - 1 < 0) return;
+
+                    UnviewLeftSight(depth + 1, x, y - 1, dir, count + 1);
+                    break;
+
+            }
+        }
+    }
+
+    private void UnviewRightSight(int depth, int x, int y, Player_Manager.Direction dir, int count)
+    {
+        if (depth > ViewRange)
+        {
+            return;
+        }
+
+        Tile _T = _Tile.MY_Tile[x][y];
+         if(_T.transform.Find("Player(Clone)") != null)
+        {
+            UnSight_Player.Add(_T.transform.Find("Player(Clone)").GetComponent<Unit_Manager>());
+        }
+
+        if (count == 2 && depth != 1)
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (y + 1 < _Tile.Y)
+                        UnviewRightSight(depth, x, y + 1, dir, 0);
+
+                    if (x - 1 < 0) return;
+                    UnviewCenterSight(depth + 1, x - 1, y, dir);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (y - 1 >= 0)
+                        UnviewRightSight(depth, x, y - 1, dir, 0);
+
+                    if (x + 1 >= _Tile.X) return;
+                    UnviewCenterSight(depth + 1, x + 1, y, dir);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (x + 1 < _Tile.X)
+                        UnviewRightSight(depth, x + 1, y, dir, 0);
+
+                    if (y + 1 >= _Tile.Y) return;
+                    UnviewCenterSight(depth + 1, x, y + 1, dir);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (x - 1 >= 0)
+                        UnviewRightSight(depth, x - 1, y, dir, 0);
+
+                    if (y - 1 < 0) return;
+                    UnviewCenterSight(depth + 1, x, y - 1, dir);
+                    break;
+            }
+        }
+        else
+        {
+            switch (dir)
+            {
+                case Player_Manager.Direction.left:
+                    if (x - 1 < 0)
+                        return;
+
+                    UnviewRightSight(depth + 1, x - 1, y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.right:
+                    if (x + 1 >= _Tile.X) return;
+
+                    UnviewRightSight(depth + 1, x + 1, y, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.up:
+                    if (y + 1 >= _Tile.Y) return;
+
+                    UnviewRightSight(depth + 1, x, y + 1, dir, count + 1);
+                    break;
+                case Player_Manager.Direction.down:
+                    if (y - 1 < 0) return;
+
+                    UnviewRightSight(depth + 1, x, y - 1, dir, count + 1);
+                    break;
+
+            }
+        }
+    }
+
+    public bool CheckFindEnemy(Unit_Manager _P, int _x, int _y)
+    {
+        if (_P._Posture == Unit_Manager.Posture.Prone && Mathf.Abs(x - _x) + Mathf.Abs(y - _y) > ViewRange / 2) return false;
+        else if (_P._Posture == Unit_Manager.Posture.Prone)
+        {
+            switch (dir)
+            {
+                case Unit_Manager.Direction.left:
+                    if (_Tile.MY_Tile[_x + 1][_y].View == Tile.View_Kind.Half || _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.right:
+                    if (_Tile.MY_Tile[_x - 1][_y].View == Tile.View_Kind.Half || _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.up:
+                    if (_Tile.MY_Tile[_x][_y - 1].View == Tile.View_Kind.Half || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low) return false;
+                    break;
+                case Unit_Manager.Direction.down:
+                    if (_Tile.MY_Tile[_x][_y + 1].View == Tile.View_Kind.Half || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low) return false;
+                    break;
+            }
+        }
+
+        return true;
+    }
+    public void Un_Sight()
+    {
+        while(UnSight_Player.Count > 0)
+        {
+            if(PLAYER.Contains(UnSight_Player[0]))
+            {
+                PLAYER.Remove(UnSight_Player[0]);
+            }
+
+            UnSight_Player.RemoveAt(0);
+        }
+
+        if(PLAYER.Count <= 0) seek = false;
+    }
+
 }
