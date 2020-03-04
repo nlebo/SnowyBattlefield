@@ -71,6 +71,8 @@ public class Charge : Tactical_Head
         _Idle = true;
         yield return null;
     }
+
+
     IEnumerator MEET()
     {
         _this.stay = 1;

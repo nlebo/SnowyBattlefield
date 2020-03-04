@@ -19,7 +19,8 @@ public class Enemy_Manager : Unit_Manager
     public Coroutine                    Move_now;
 
 
-    List<Unit_Manager>                  PLAYER;
+    protected List<Unit_Manager>        PLAYER;
+    public List<Unit_Manager>           Player_See;
     List<Tile>                          A_T = null;
     List<Vector2Int>                    Behind_Ob;
     List<Unit_Manager>                  UnSight_Player;
@@ -65,6 +66,7 @@ public class Enemy_Manager : Unit_Manager
 
 
         PLAYER = new List<Unit_Manager>();
+        Player_See = new List<Unit_Manager>();
 
         if (Mathf.Abs(_Tile.SpawnPoint[0].x - _Tile.SpawnPoint[1].x) > Mathf.Abs(_Tile.SpawnPoint[0].y - _Tile.SpawnPoint[1].y))
         {
@@ -93,25 +95,35 @@ public class Enemy_Manager : Unit_Manager
 
     }
 
-    public void Sight()
+    public override void Sight()
     {
 
         if (T.ViewState == Tile.View_State.OutSight || T.ViewState == Tile.View_State.UnKnown){
-            if (gameObject.layer != 9)
+            if (gameObject.layer != 9){
                 gameObject.layer = 9;
+                if(Player_See.Count > 0)
+                    Player_See.Clear();
+            }
         }
         else
         {
             if (gameObject.layer != 11)
                 gameObject.layer = 11;
         }
-        if(_Posture == Posture.Prone && gameObject.layer == 11)
+        if(gameObject.layer == 11)
         {
             for(int i = 0; i < Tactical_Head.GetPlayerCount();i++)
             {
-                if(Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this,x,y))
+                if(Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this, x, y))
                 {
-                    if(gameObject.layer != 9) gameObject.layer = 9;
+                    if (gameObject.layer != 9)
+                    {
+                        if(Player_See.Contains(Tactical_Head.GetPlayer(i)))
+                            Player_See.Remove(Tactical_Head.GetPlayer(i));
+
+                        gameObject.layer = 9;
+                    }
+
                 }
                 else
                 {
@@ -373,7 +385,7 @@ public class Enemy_Manager : Unit_Manager
     }
 
     
-    public bool StartMove()
+    public virtual bool StartMove()
     {
         Move_now = StartCoroutine(Move());
         return true;

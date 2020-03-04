@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class Aggresive_Scout : Enemy_Manager
 {
+    public override bool StartMove()
+    {
+        if (_Posture != Posture.Prone)
+            ChangePos(Posture.Prone);
+
+        Move_now = StartCoroutine(Move());
+        return true;
+    }
     public override void SelectClass()
     {
         _CLASS = CLASS.AggresiveScout;

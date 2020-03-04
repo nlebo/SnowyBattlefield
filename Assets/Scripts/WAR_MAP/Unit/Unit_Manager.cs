@@ -380,6 +380,12 @@ public class Unit_Manager : MonoBehaviour {
 
 		return true;
 	}
-
-
+public virtual void Sight()
+{
+	
+}
+	public int GetUnitDistance(Unit_Manager _P)
+	{
+		return Mathf.Abs(x - _P.x) + Mathf.Abs(y-_P.y);
+	}
 }

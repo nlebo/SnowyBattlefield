@@ -12,7 +12,7 @@ public class View_Manager : MonoBehaviour {
     Tile T;
     List<Tile> T_Tile = new List<Tile>();
 
-    public static List<Transform> Enemys = new List<Transform>();
+    public static List<Unit_Manager> Enemys = new List<Unit_Manager>();
     int I_X = 0, I_Y = 0;
     #endregion
 
@@ -322,14 +322,19 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
+            Enemy_Manager _Enemy = _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>();
+            if (CheckFindEnemy(_Enemy, _x, _y))
             {
-                if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
+                if (!Enemys.Contains(_Enemy))
                 {
                     Char.MeetEnemy = true;
-                    Enemys.Add(_T.transform.Find("Enemy(Clone)"));
+                    Enemys.Add(_Enemy);
                 }
-                _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>().Sight();
+
+                if(!_Enemy.Player_See.Contains(Char))
+                    _Enemy.Player_See.Add(Char);
+                
+                _Enemy.Sight();
             }
         }
 
@@ -463,14 +468,19 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
+            Enemy_Manager _Enemy = _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>();
+            if (CheckFindEnemy(_Enemy, _x, _y))
             {
-                if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
+                if (!Enemys.Contains(_Enemy))
                 {
                     Char.MeetEnemy = true;
-                    Enemys.Add(_T.transform.Find("Enemy(Clone)"));
+                    Enemys.Add(_Enemy);
                 }
-                _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>().Sight();
+
+                if (!_Enemy.Player_See.Contains(Char))
+                    _Enemy.Player_See.Add(Char);
+
+                _Enemy.Sight();
             }
         }
 
@@ -639,14 +649,19 @@ public class View_Manager : MonoBehaviour {
 
         if (_T.transform.Find("Enemy(Clone)") != null)
         {
-            if (CheckFindEnemy(_T.transform.Find("Enemy(Clone)").GetComponent<Unit_Manager>(), _x, _y))
+            Enemy_Manager _Enemy = _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>();
+            if (CheckFindEnemy(_Enemy, _x, _y))
             {
-                if (!Enemys.Contains(_T.transform.Find("Enemy(Clone)")))
+                if (!Enemys.Contains(_Enemy))
                 {
                     Char.MeetEnemy = true;
-                    Enemys.Add(_T.transform.Find("Enemy(Clone)"));
+                    Enemys.Add(_Enemy);
                 }
-                _T.transform.Find("Enemy(Clone)").GetComponent<Enemy_Manager>().Sight();
+
+                if (!_Enemy.Player_See.Contains(Char))
+                    _Enemy.Player_See.Add(Char);
+
+                _Enemy.Sight();
             }
         }
 
