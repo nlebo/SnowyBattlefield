@@ -59,6 +59,8 @@ public class Unit_Manager : MonoBehaviour {
 	public bool							Expanding = false;
 
 	public GameObject					ChooseTile;
+	public Image						HP_Bar;
+	public Image						Mental_Bar;
 	public List<Weapon_Manager>			Weapons;
 	public List<Item_Manager>			Items;
 
@@ -193,7 +195,7 @@ public class Unit_Manager : MonoBehaviour {
 		Partner.transform.localPosition = Vector2.zero;
 	}
 
-	public bool Hit(Weapon_Manager _Weapon)
+	public virtual bool Hit(Weapon_Manager _Weapon)
 	{
 		float Total = _Weapon.Unit.aim + _Weapon.Unit.PostureBonus + _Weapon.Aim_Bonus;
 		int Pressure_Bonus = pressure - ((pressure / 100) * (will / 2));
@@ -282,6 +284,7 @@ public class Unit_Manager : MonoBehaviour {
 		}
 		_Weapon.Unit.pressure -= 20;
 		pressure += 20;
+		ChangeHP_Bar();
 		if (Health <= 0) Death();
 
 		return true;
@@ -388,4 +391,14 @@ public virtual void Sight()
 	{
 		return Mathf.Abs(x - _P.x) + Mathf.Abs(y-_P.y);
 	}
+
+	protected void ChangeHP_Bar()
+	{
+		HP_Bar.fillAmount = Health / 100f;
+	}
+	protected void ChangeMental_Bar()
+	{
+		Mental_Bar.fillAmount = pressure / 100f;
+	}
+
 }

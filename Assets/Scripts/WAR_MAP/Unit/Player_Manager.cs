@@ -51,7 +51,7 @@ public class Player_Manager : Unit_Manager {
         View = GetComponent<View_Manager>();
 
 		original = GetComponent<SpriteRenderer>().color;
-        
+        ChangeMental_Bar();
 	}
 	
 	// Update is called once per frame
@@ -869,7 +869,12 @@ public class Player_Manager : Unit_Manager {
        
 
 	}
-
+    public override bool Hit(Weapon_Manager _Weapon)
+    {
+        bool result = base.Hit(_Weapon);
+        ChangeMental_Bar();
+        return result;
+    }
     public override bool Dig_hasty_fighting_position()
     {
         DT = T;
