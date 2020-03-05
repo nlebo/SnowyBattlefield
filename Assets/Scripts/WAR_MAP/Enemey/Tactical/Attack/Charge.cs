@@ -6,6 +6,8 @@ public class Charge : Tactical_Head
 {
     Vector2 Goal;
 
+
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -17,13 +19,32 @@ public class Charge : Tactical_Head
                 ((int)_Tile.SpawnPoint[0].y - 6) > 0 ? (int)_Tile.SpawnPoint[0].y - 6 : 0,
                 ((int)_Tile.SpawnPoint[0].y + 7) >= _Tile.Y ? _Tile.Y - 1 : (int)_Tile.SpawnPoint[0].y + 7);
 
+        if (_this._CLASS == Enemy_Manager.CLASS.AggresiveScout || _this._CLASS == Enemy_Manager.CLASS.DefensiveScout)
+        {
+            Tag_Player = new List<Unit_Manager>();
+            UnTageed_Player = new List<Unit_Manager>();
+            for (int i = 0; i < _Players.Count; i++)
+            {
+                UnTageed_Player.Add(_Players[i]);
+            }
+        }
+
         _this.MakeNav(Goal);
     }
 
     public override void Idle()
     {
         base.Idle();
-        _IDLE = StartCoroutine(IDLE());
+
+        switch (_this._CLASS)
+        {
+            case Enemy_Manager.CLASS.Default:
+                _IDLE = StartCoroutine(IDLE());
+                break;
+            case Enemy_Manager.CLASS.AggresiveScout:
+                _IDLE = StartCoroutine(ScoutIDLE());
+                break;
+        }
     }
 
     public override void Meet()
@@ -103,6 +124,40 @@ public class Charge : Tactical_Head
         yield return null;
     }
 
+    IEnumerator ScoutIDLE()
+    {
+        
+        Unit_Manager CloserPlayer = _this.CloserPlayer(ref UnTageed_Player);
+        Vector2 _Goal = new Vector2(CloserPlayer.x,CloserPlayer.y);
+        _this.ScoutMakeNav(Goal);
 
+        if(_this.Player_See.Count > 0)
+        {
+            _this.seek = true;
+            StopCoroutine(_IDLE);
+            yield return null;
+        }
+
+        _this.StartMove();
+        while (!_this.MovingNow)
+        {
+            yield return null;
+        }
+        _this.MovingNow = false;
+
+
+        _this.Seek();
+        while (!_this.Watching)
+        {
+            yield return null;
+        }
+
+        if(_this.seek){
+            Tag_Player.Add(_this.GetMeetPlayer()[_this.CloserPlayer()]);
+            UnTageed_Player.Remove(_this.GetMeetPlayer()[_this.CloserPlayer()]);
+        }
+
+        yield return null;
+    }
 
 }

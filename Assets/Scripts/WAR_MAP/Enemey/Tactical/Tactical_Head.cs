@@ -9,6 +9,8 @@ public class Tactical_Head : MonoBehaviour
     protected static List<Unit_Manager> _Players;
 
     public Enemy_Manager _this;
+    public List<Unit_Manager> Tag_Player;
+    public List<Unit_Manager> UnTageed_Player;
     public bool _Idle, _Meet;
 
     protected Coroutine _MEET, _IDLE;

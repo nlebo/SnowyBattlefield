@@ -4413,13 +4413,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 205
-  m_Sprite: {fileID: -1524976939683410580, guid: 6e1e2e6dbcb424f4dae22701f1f6f460,
+  m_Sprite: {fileID: -5838576953222009279, guid: 08926087af06bb94fa6ba5c4ff9f6e72,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.31, y: 0.45}
+  m_Size: {x: 0.76, y: 0.87}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -8234,7 +8234,7 @@ MonoBehaviour:
   - {fileID: 872742056}
   Cursors:
   - {fileID: -1476201901094962867, guid: 6e1e2e6dbcb424f4dae22701f1f6f460, type: 3}
-  - {fileID: -1524976939683410580, guid: 6e1e2e6dbcb424f4dae22701f1f6f460, type: 3}
+  - {fileID: -5838576953222009279, guid: 08926087af06bb94fa6ba5c4ff9f6e72, type: 3}
   Bars:
   - {fileID: 1515128430}
   - {fileID: 643899744}

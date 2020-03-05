@@ -21,7 +21,7 @@ public class Enemy_Manager : Unit_Manager
 
     protected List<Unit_Manager>        PLAYER;
     public List<Unit_Manager>           Player_See;
-    List<Tile>                          A_T = null;
+    protected List<Tile>                A_T = null;
     List<Vector2Int>                    Behind_Ob;
     List<Unit_Manager>                  UnSight_Player;
 
@@ -46,6 +46,7 @@ public class Enemy_Manager : Unit_Manager
     public bool                         Watch_Stop = false;
 
     public bool                      loop = false;
+    public bool                         SpecialFlag = false;
     public CLASS _CLASS;
 	#endregion
 
@@ -330,7 +331,13 @@ public class Enemy_Manager : Unit_Manager
             A_T.Add(_Tile.MY_Tile[_x][_y]);
             //_Tile.MY_Tile[_x][_y].HighLight();
         }
+    
     }
+    public virtual void Scout_A_Star(int _x, int _y, int px, int py, int count, int deep)
+    {
+
+    }
+    
     public void MakeNav(Vector2 _Goal)
     {
         realR = Mathf.Abs(x - (int)_Goal.x) + Mathf.Abs(y - (int)_Goal.y);
@@ -340,6 +347,11 @@ public class Enemy_Manager : Unit_Manager
         realR = 10000;
         realDeep = 10000;
         comple = false;
+    }
+
+    public virtual void ScoutMakeNav(Vector2 _Goal)
+    {
+        
     }
     public List<Tile> GetNav()
     {
@@ -371,7 +383,26 @@ public class Enemy_Manager : Unit_Manager
 
         return _where;
     }
+    public Unit_Manager CloserPlayer(ref List<Unit_Manager> _P)
+    {
+        int minDistance = 20;
+        int _where = -1;
 
+        for (int i = 0; i < _P.Count; i++)
+        {
+            if (_P[i] != null && Mathf.Abs(_P[i].x - x) + Mathf.Abs(_P[i].y - y) <= minDistance)
+            {
+                minDistance = Mathf.Abs(_P[i].x - x) + Mathf.Abs(_P[i].y - y);
+                _where = i;
+            }
+            else if(_P[i] == null){
+                 _P.RemoveAt(i);
+                 i--;
+            }
+        }
+
+        return _P[_where];
+    }
     
     public virtual bool StartMove()
     {
@@ -2017,5 +2048,8 @@ public class Enemy_Manager : Unit_Manager
 
         if(PLAYER.Count <= 0) seek = false;
     }
+    public virtual void ClassAction()
+    {
 
+    }
 }
