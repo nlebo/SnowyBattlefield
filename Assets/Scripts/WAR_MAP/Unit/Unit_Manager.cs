@@ -321,84 +321,84 @@ public class Unit_Manager : MonoBehaviour {
 	}
 
 	public virtual void LookUp()
-	{
-		switch (dir)
-		{
-			case Direction.right:
-				GetComponent<SpriteRenderer>().flipX = false;
-				break;
-			case Direction.left:
-				GetComponent<SpriteRenderer>().flipX = true;
-				break;
-			case Direction.down:
-				break;
-			case Direction.up:
-				break;
-		}
-	}
+    {
+        switch (dir)
+        {
+            case Direction.right:
+                GetComponent<SpriteRenderer>().flipX = false;
+                break;
+            case Direction.left:
+                GetComponent<SpriteRenderer>().flipX = true;
+                break;
+            case Direction.down:
+                break;
+            case Direction.up:
+                break;
+        }
+    }
 
-	public virtual bool Dig_hasty_fighting_position()
-	{
-		if (T.Kind != Tile_Manager.Cover_Kind.Default && T.Kind != Tile_Manager.Cover_Kind.CanNot) return false;
-		if (Now_Action_Point < 7) return false;
-		DigHasty = true;
+    public virtual bool Dig_hasty_fighting_position()
+    {
+        if (T.Kind != Tile_Manager.Cover_Kind.Default && T.Kind != Tile_Manager.Cover_Kind.CanNot) return false;
+        if (Now_Action_Point < 7) return false;
+        DigHasty = true;
 
 
-		
-		return true;
-	}
 
-	public virtual bool Dig_Depper()
-	{
-		if (Now_Action_Point < 7) return false;
+        return true;
+    }
 
-		if (T.Kind == Tile_Manager.Cover_Kind.Skimisher)
-		{
-			T.Kind = Tile_Manager.Cover_Kind.Slit;
-			T.View = Tile.View_Kind.Half;
-			Destroy(T._Obstacle);
-			T._Obstacle = Instantiate(T.Obstacle_Manager.Obstacles[7], T.transform);
-			T.direct = Tile.Direct.Any;
-			Now_Action_Point -= 7;
-		}
+    public virtual bool Dig_Depper()
+    {
+        if (Now_Action_Point < 7) return false;
 
-		else if (T.Kind == Tile_Manager.Cover_Kind.Slit)
-		{
-			T.Kind = Tile_Manager.Cover_Kind.Standing;
-			T.View = Tile.View_Kind.Full;
-			Destroy(T._Obstacle);
-			T._Obstacle = Instantiate(T.Obstacle_Manager.Obstacles[8], T.transform);
-			Now_Action_Point -= 7;
-		}
-		else
-			return false;
+        if (T.Kind == Tile_Manager.Cover_Kind.Skimisher)
+        {
+            T.Kind = Tile_Manager.Cover_Kind.Slit;
+            T.View = Tile.View_Kind.Half;
+            Destroy(T._Obstacle);
+            T._Obstacle = Instantiate(T.Obstacle_Manager.Obstacles[7], T.transform);
+            T.direct = Tile.Direct.Any;
+            Now_Action_Point -= 7;
+        }
 
-		return true;
-	}
-	public virtual bool Expand()
-	{
-		if (Now_Action_Point < 8) return false;
-		if (T.Kind == Tile_Manager.Cover_Kind.Slit || T.Kind == Tile_Manager.Cover_Kind.Standing)
-			Expanding = true;
+        else if (T.Kind == Tile_Manager.Cover_Kind.Slit)
+        {
+            T.Kind = Tile_Manager.Cover_Kind.Standing;
+            T.View = Tile.View_Kind.Full;
+            Destroy(T._Obstacle);
+            T._Obstacle = Instantiate(T.Obstacle_Manager.Obstacles[8], T.transform);
+            Now_Action_Point -= 7;
+        }
+        else
+            return false;
 
-		return true;
-	}
-public virtual void Sight()
-{
-	
-}
-	public int GetUnitDistance(Unit_Manager _P)
-	{
-		return Mathf.Abs(x - _P.x) + Mathf.Abs(y-_P.y);
-	}
+        return true;
+    }
+    public virtual bool Expand()
+    {
+        if (Now_Action_Point < 8) return false;
+        if (T.Kind == Tile_Manager.Cover_Kind.Slit || T.Kind == Tile_Manager.Cover_Kind.Standing)
+            Expanding = true;
 
-	protected void ChangeHP_Bar()
-	{
-		HP_Bar.fillAmount = Health / 100f;
-	}
-	protected void ChangeMental_Bar()
-	{
-		Mental_Bar.fillAmount = pressure / 100f;
-	}
+        return true;
+    }
+    public virtual void Sight()
+    {
+
+    }
+    public int GetUnitDistance(Unit_Manager _P)
+    {
+        return Mathf.Abs(x - _P.x) + Mathf.Abs(y - _P.y);
+    }
+
+    protected void ChangeHP_Bar()
+    {
+        HP_Bar.fillAmount = Health / 100f;
+    }
+    protected void ChangeMental_Bar()
+    {
+        Mental_Bar.fillAmount = pressure / 100f;
+    }
 
 }
