@@ -32,6 +32,8 @@ public class Camera_Move : MonoBehaviour {
         	transform.position = BasePos - new Vector3(Change.x , Change.y, 0);
 		}
 
+		transform.Translate(new Vector3(Input.GetAxis("Horizontal") * MoveSpeed * Time.deltaTime, Input.GetAxis("Vertical") * MoveSpeed * Time.deltaTime));
+
 		if (Camera.main.orthographicSize > 2 && scroll > 0) Camera.main.orthographicSize -= MoveSpeed * Time.deltaTime;
 		if (Camera.main.orthographicSize < 12 && scroll < 0) Camera.main.orthographicSize += MoveSpeed * Time.deltaTime;
     }
