@@ -84,8 +84,7 @@ public class By_Pass : Tactical_Head
 
         if (_this.seek)
         {
-            Meet();
-            while (!_Meet) { yield return null; }
+            _this.loop = true;
         }
 
         _Idle = true;

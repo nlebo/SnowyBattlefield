@@ -64,8 +64,10 @@ public class Shot_Run : Tactical_Head
 
         if (_this.seek)
         {
-            Meet();
-            while (!_Meet) { yield return null; }
+            if (_this.seek)
+            {
+                _this.loop = true;
+            }
         }
 
         _Idle = true;

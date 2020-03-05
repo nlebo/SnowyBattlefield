@@ -339,7 +339,7 @@ public class Unit_Manager : MonoBehaviour {
     {
         HP_Bar.fillAmount = Health / 100f;
     }
-    protected void ChangeMental_Bar()
+    public void ChangeMental_Bar()
     {
         Mental_Bar.fillAmount = pressure / 100f;
     }

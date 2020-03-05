@@ -664,6 +664,8 @@ public class Player_Manager : Unit_Manager {
             if (Mathf.Abs(x - Team.x) <= 1 && Mathf.Abs(y - Team.y) <= 1)
                 Team.pressure += 30;
 
+                Team.ChangeMental_Bar();
+
         }
 
         for (int i = 0; i < Tactical_Head.GetEnemyCount(); i++)
@@ -872,6 +874,18 @@ public class Player_Manager : Unit_Manager {
     public override bool Hit(Weapon_Manager _Weapon)
     {
         bool result = base.Hit(_Weapon);
+        if (result)
+        {
+            for (int i = 0; i < Tactical_Head.GetPlayerCount(); i++)
+            {
+                Unit_Manager Team = Tactical_Head.GetPlayer(i);
+                if (Mathf.Abs(x - Team.x) <= 1 && Mathf.Abs(y - Team.y) <= 1)
+                    Team.pressure += 30;
+
+                Team.ChangeMental_Bar();
+
+            }
+        }
         ChangeMental_Bar();
         return result;
     }

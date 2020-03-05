@@ -107,17 +107,25 @@ public class Enemy_Manager : Unit_Manager
             if (gameObject.layer != 11)
                 gameObject.layer = 11;
         }
-        if(gameObject.layer == 11)
+        if (gameObject.layer == 11)
         {
-            for(int i = 0; i < Tactical_Head.GetPlayerCount();i++)
+            for (int i = 0; i < Tactical_Head.GetPlayerCount(); i++)
             {
-                if (Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this, x, y))
+                if (!Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this, x, y))
                 {
                     if (Player_See.Contains(Tactical_Head.GetPlayer(i)))
                         Player_See.Remove(Tactical_Head.GetPlayer(i));
 
                 }
+                else
+                {
+                    if (Player_See.Contains(Tactical_Head.GetPlayer(i)))
+                        Player_See.Add(Tactical_Head.GetPlayer(i));
+
+                }
             }
+
+            if (Player_See.Count <= 0) gameObject.layer = 9;
         }
 
         HP_Bar.gameObject.layer = gameObject.layer;
@@ -684,21 +692,21 @@ public class Enemy_Manager : Unit_Manager
             yield return null;
         }
 
-        if(seek)
-            {
-                Unit_Manager _P = GetMeetPlayer()[CloserPlayer()];
+        if (seek)
+        {
+            Unit_Manager _P = GetMeetPlayer()[CloserPlayer()];
 
-                if(Mathf.Abs(_P.x - x) > Mathf.Abs(_P.y -y))
-                {
-                    if(_P.x > x) dir = Direction.right;
-                    else dir = Direction.left;
-                }
-                else
-                {
-                    if(_P.y > y) dir = Direction.up;
-                    else dir = Direction.down;
-                }
+            if (Mathf.Abs(_P.x - x) > Mathf.Abs(_P.y - y))
+            {
+                if (_P.x > x) dir = Direction.right;
+                else dir = Direction.left;
             }
+            else
+            {
+                if (_P.y > y) dir = Direction.up;
+                else dir = Direction.down;
+            }
+        }
         Now_Move = false;
         CoverPosture();
 
@@ -767,32 +775,32 @@ public class Enemy_Manager : Unit_Manager
             switch (dir)
             {
                 case Player_Manager.Direction.left:
-                    if (y + i < 0 || y + i >= _Tile.Y || _Tile.MY_Tile[x-1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x, y + i, dir,0);
-                    else if (i == 2) RightSight(1, x, y + i, dir,0);
+                    if (y + i < 0 || y + i >= _Tile.Y || x - 1 >= 0 && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x, y + i, dir, 0);
+                    else if (i == 2) RightSight(1, x, y + i, dir, 0);
                     else CenterSight(1, x, y + i, dir);
                     break;
                 case Player_Manager.Direction.right:
-                    if (y - i < 0 || y - i >= _Tile.Y || _Tile.MY_Tile[x+1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
-                        return;
+                    if (y - i < 0 || y - i >= _Tile.Y || x + 1 < _Tile.X && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        break;
 
-                    if (i == -2) LeftSight(1, x, y - i, dir,0);
-                    else if (i == 2) RightSight(1, x, y - i, dir,0);
+                    if (i == -2) LeftSight(1, x, y - i, dir, 0);
+                    else if (i == 2) RightSight(1, x, y - i, dir, 0);
                     else CenterSight(1, x, y - i, dir);
                     break;
                 case Player_Manager.Direction.up:
-                    if (x + i < 0 || x + i >= _Tile.X || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x + i, y, dir,0);
-                    else if (i == 2) RightSight(1, x + i, y, dir,0);
+                    if (x + i < 0 || x + i >= _Tile.X || y + 1 < _Tile.Y && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x + i, y, dir, 0);
+                    else if (i == 2) RightSight(1, x + i, y, dir, 0);
                     else CenterSight(1, x + i, y, dir);
                     break;
                 case Player_Manager.Direction.down:
-                    if (x - i < 0 || x - i >= _Tile.X || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x - i, y, dir,0);
-                    else if (i == 2) RightSight(1, x - i, y, dir,0);
+                    if (x - i < 0 || x - i >= _Tile.X || y - 1 >= 0 && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && _Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x - i, y, dir, 0);
+                    else if (i == 2) RightSight(1, x - i, y, dir, 0);
                     else CenterSight(1, x - i, y, dir);
                     break;
             }
@@ -800,6 +808,22 @@ public class Enemy_Manager : Unit_Manager
         }
         Un_Sight();
         Sight();
+
+        if (seek)
+        {
+            Unit_Manager _P = GetMeetPlayer()[CloserPlayer()];
+
+            if (Mathf.Abs(_P.x - x) > Mathf.Abs(_P.y - y))
+            {
+                if (_P.x > x) dir = Direction.right;
+                else dir = Direction.left;
+            }
+            else
+            {
+                if (_P.y > y) dir = Direction.up;
+                else dir = Direction.down;
+            }
+        }
         Watching = true;
     }
 

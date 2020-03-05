@@ -193,32 +193,32 @@ public class View_Manager : MonoBehaviour {
             switch (Char.dir)
             {
                 case Player_Manager.Direction.left:
-                    if (y + i < 0 || y + i >= _Tile.Y || _Tile.MY_Tile[x-1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x, y + i, Char.dir,0);
-                    else if (i == 2) RightSight(1, x, y + i, Char.dir,0);
+                    if (y + i < 0 || y + i >= _Tile.Y || x - 1 >= 0 && _Tile.MY_Tile[x - 1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x, y + i, Char.dir, 0);
+                    else if (i == 2) RightSight(1, x, y + i, Char.dir, 0);
                     else CenterSight(1, x, y + i, Char.dir);
                     break;
                 case Player_Manager.Direction.right:
-                    if (y - i < 0 || y - i >= _Tile.Y || _Tile.MY_Tile[x+1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
-                        return;
+                    if (y - i < 0 || y - i >= _Tile.Y || x + 1 < _Tile.X && _Tile.MY_Tile[x + 1][y].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
+                        break;
 
-                    if (i == -2) LeftSight(1, x, y - i, Char.dir,0);
-                    else if (i == 2) RightSight(1, x, y - i, Char.dir,0);
+                    if (i == -2) LeftSight(1, x, y - i, Char.dir, 0);
+                    else if (i == 2) RightSight(1, x, y - i, Char.dir, 0);
                     else CenterSight(1, x, y - i, Char.dir);
                     break;
                 case Player_Manager.Direction.up:
-                    if (x + i < 0 || x + i >= _Tile.X || _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x + i, y, Char.dir,0);
-                    else if (i == 2) RightSight(1, x + i, y, Char.dir,0);
+                    if (x + i < 0 || x + i >= _Tile.X || y + 1 < _Tile.Y && _Tile.MY_Tile[x][y + 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x + i, y, Char.dir, 0);
+                    else if (i == 2) RightSight(1, x + i, y, Char.dir, 0);
                     else CenterSight(1, x + i, y, Char.dir);
                     break;
                 case Player_Manager.Direction.down:
-                    if (x - i < 0 || x - i >= _Tile.X || _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
-                        return;
-                    if (i == -2) LeftSight(1, x - i, y, Char.dir,0);
-                    else if (i == 2) RightSight(1, x - i, y, Char.dir,0);
+                    if (x - i < 0 || x - i >= _Tile.X || y - 1 >= 0 && _Tile.MY_Tile[x][y - 1].View == Tile.View_Kind.Low && Char._Posture == Unit_Manager.Posture.Prone)
+                        break;
+                    if (i == -2) LeftSight(1, x - i, y, Char.dir, 0);
+                    else if (i == 2) RightSight(1, x - i, y, Char.dir, 0);
                     else CenterSight(1, x - i, y, Char.dir);
                     break;
             }
