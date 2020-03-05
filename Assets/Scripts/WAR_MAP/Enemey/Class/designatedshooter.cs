@@ -15,6 +15,7 @@ public class designatedshooter : Enemy_Manager
 
     public override bool CoverCheck(Unit_Manager _Unit)
     {
+        stay = 1;
         if (_Posture == Posture.Prone) return true;
 
         return ChangePos(Posture.Prone);

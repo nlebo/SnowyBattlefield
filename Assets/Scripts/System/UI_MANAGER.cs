@@ -19,6 +19,7 @@ public class UI_MANAGER : MonoBehaviour {
 	public Text Tactical;
 	public Text Name;
 	public Text _FPS;
+	public Text HitRateText;
 	public TextMesh Damage;
 
 	[Header("GameObject")]
@@ -45,7 +46,11 @@ public class UI_MANAGER : MonoBehaviour {
 	public Button ExpandButton;
 	public Button BackPackButton;
 
-	[Header("Array&List")]
+	[Header("Image")]
+    public Image Delete_AP_Bar;
+    public Image HitRate;
+
+    [Header("Array&List")]
 	public Text[] Bars_Tex;
 	List<Text> Texts;
 	public List<Button> Weapon;
@@ -53,7 +58,7 @@ public class UI_MANAGER : MonoBehaviour {
 	public List<Button> Weapon_Button;
 	public Sprite[] Cursors;
 	public Image[] Bars;
-	public Image Delete_AP_Bar;
+	
 
 	[Header("ToastBar")]
 	public GameObject Weapon_Toast;

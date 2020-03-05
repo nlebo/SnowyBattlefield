@@ -35,6 +35,24 @@ public class Rifle_Manager : Weapon_Manager {
 		if (Btn1 || Btn2)
 		{
 			Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[0]);
+			Vector2 pos = _Input.pos;
+			RaycastHit2D hit = _Input.hit_Player;
+
+            if (hit.transform != null && hit.transform.tag == "Enemy")
+            {
+                Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
+
+                if (!_UI.HitRate.gameObject.activeInHierarchy)
+                {
+                    _UI.HitRate.gameObject.SetActive(true);
+                    _UI.HitRateText.text = _Unit.GetHitRate(this).ToString() + "%";
+                }
+            }
+
+            else
+            {
+                if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
+            }
 
 		}
 
@@ -64,6 +82,7 @@ public class Rifle_Manager : Weapon_Manager {
 						Aim_Bonus = 0;
 						Unit.DrawActionPoint();
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
+						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
 					}
 				}
 			}

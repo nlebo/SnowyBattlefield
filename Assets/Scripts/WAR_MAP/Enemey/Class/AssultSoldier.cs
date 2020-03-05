@@ -16,6 +16,7 @@ public class AssultSoldier : Enemy_Manager
 
     public override bool CoverCheck(Unit_Manager _Unit)
     {
+        stay = 1;
         if (_Posture == Posture.Prone) {
             for(int i=0;i<View_Manager.Enemys.Count;i++)
             {

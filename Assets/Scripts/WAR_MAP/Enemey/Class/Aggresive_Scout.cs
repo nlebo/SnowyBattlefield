@@ -18,7 +18,15 @@ public class Aggresive_Scout : Enemy_Manager
     }
     public override bool Attack()
     {
-        return base.Attack();
+        if(Player_See.Count > 0)
+            return base.Attack();
+        else
+        {
+            seek = false;
+            loop = true;
+            Watch_Stop = false;
+            return false;
+        }
     }
 
     public override bool CoverCheck(Unit_Manager _Unit)

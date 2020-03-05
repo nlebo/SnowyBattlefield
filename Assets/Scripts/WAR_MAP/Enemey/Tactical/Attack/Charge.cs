@@ -62,12 +62,7 @@ public class Charge : Tactical_Head
             yield return null;
         }
 
-        if (_this.seek)
-        {
-            Meet();
-            while (!_Meet) { yield return null; }
-        }
-
+        if(_this.seek) _this.loop = true;
         _Idle = true;
         yield return null;
     }
@@ -75,7 +70,7 @@ public class Charge : Tactical_Head
 
     IEnumerator MEET()
     {
-        _this.stay = 1;
+        
         _this.Tracking = false;
 
         if (_this.GetMeetPlayer().Count > _this.CloserPlayer())

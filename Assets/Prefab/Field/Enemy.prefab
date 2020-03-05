@@ -173,6 +173,7 @@ MonoBehaviour:
   MovingNow: 0
   Watching: 0
   Watch_Stop: 0
+  loop: 0
   _CLASS: 0
 --- !u!70 &2489259303713767156
 CapsuleCollider2D:
@@ -201,7 +202,7 @@ GameObject:
   - component: {fileID: 6698100857190188819}
   - component: {fileID: 6721810419680252808}
   - component: {fileID: 8610187748074077888}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +226,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.13, y: 1.78}
-  m_SizeDelta: {x: 276, y: 7.0016828}
+  m_SizeDelta: {x: 123, y: 9.002164}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6721810419680252808
 CanvasRenderer:
@@ -253,7 +254,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 3663426502802609470, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd,
+  m_Sprite: {fileID: -1974221255362189358, guid: 008f0ee4cd6747c46b0a0e416c4f8ebd,
     type: 3}
   m_Type: 3
   m_PreserveAspect: 0
@@ -276,7 +277,7 @@ GameObject:
   - component: {fileID: 5168222802368924967}
   - component: {fileID: 6969927036683756943}
   - component: {fileID: 2693183964971012658}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

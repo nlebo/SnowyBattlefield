@@ -45,6 +45,7 @@ public class Enemy_Manager : Unit_Manager
     public bool                         Watching = false;
     public bool                         Watch_Stop = false;
 
+    public bool                      loop = false;
     public CLASS _CLASS;
 	#endregion
 
@@ -86,14 +87,10 @@ public class Enemy_Manager : Unit_Manager
 
         Behind_Ob = new List<Vector2Int>();
         Board_Manager.m_Board_Manager.Recive_Tactical += ReciveTactical;
-        Health = 1;
+        
+        Health = 100;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public override void Sight()
     {
@@ -114,34 +111,17 @@ public class Enemy_Manager : Unit_Manager
         {
             for(int i = 0; i < Tactical_Head.GetPlayerCount();i++)
             {
-                if(Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this, x, y))
+                if (Tactical_Head.GetPlayer(i).View.CheckFindEnemy(this, x, y))
                 {
-                    if (gameObject.layer != 9)
-                    {
-                        if(Player_See.Contains(Tactical_Head.GetPlayer(i)))
-                            Player_See.Remove(Tactical_Head.GetPlayer(i));
+                    if (Player_See.Contains(Tactical_Head.GetPlayer(i)))
+                        Player_See.Remove(Tactical_Head.GetPlayer(i));
 
-                        gameObject.layer = 9;
-                    }
-
-                }
-                else
-                {
-                    if(gameObject.layer != 11) gameObject.layer = 11;
-                    break;
                 }
             }
         }
-        // if (T.ViewState == Tile.View_State.InSight)
-        // {
-        //     if (gameObject.layer != 11)
-        //         gameObject.layer = 11;
-        // }
-        // else
-        // {
-        //     if (gameObject.layer != 9)
-        //         gameObject.layer = 9;
-        // }
+
+        HP_Bar.gameObject.layer = gameObject.layer;
+        HP_Bar.transform.parent.gameObject.layer = gameObject.layer;
     }
 
     public override void Death()
@@ -398,7 +378,6 @@ public class Enemy_Manager : Unit_Manager
 
     public virtual bool Attack()
     {
-        
         return Weapons[0].Rand(PLAYER[CloserPlayer()]);
     }
 
@@ -426,18 +405,24 @@ public class Enemy_Manager : Unit_Manager
         }
         Watching = false;
 
-        if (!seek)
+        while (Now_Action_Point > 0)
         {
-            _Tactical.Idle();
-            while (!_Tactical._Idle) { yield return null; }
-            _Tactical._Idle = false;
+            loop = false;
+            if (!seek)
+            {
+                _Tactical.Idle();
+                while (!_Tactical._Idle) { yield return null; }
+                _Tactical._Idle = false;
 
-        }
-        else
-        {
-            _Tactical.Meet();
-            while (!_Tactical._Meet) { yield return null; }
-            _Tactical._Meet = false;
+            }
+            else
+            {
+                _Tactical.Meet();
+                while (!_Tactical._Meet) { yield return null; }
+                _Tactical._Meet = false;
+            }
+
+            if(!loop) break;
         }
 
 
@@ -690,6 +675,7 @@ public class Enemy_Manager : Unit_Manager
                 change = false;
             }
             Seek();
+            
             if (stay > 0) continue;
 
             if (seek && Watch_Stop && CanStop(T))break;
@@ -698,6 +684,21 @@ public class Enemy_Manager : Unit_Manager
             yield return null;
         }
 
+        if(seek)
+            {
+                Unit_Manager _P = GetMeetPlayer()[CloserPlayer()];
+
+                if(Mathf.Abs(_P.x - x) > Mathf.Abs(_P.y -y))
+                {
+                    if(_P.x > x) dir = Direction.right;
+                    else dir = Direction.left;
+                }
+                else
+                {
+                    if(_P.y > y) dir = Direction.up;
+                    else dir = Direction.down;
+                }
+            }
         Now_Move = false;
         CoverPosture();
 
@@ -756,9 +757,11 @@ public class Enemy_Manager : Unit_Manager
     public void Seek()
     {
         PLAYER.Clear();
+        if(UnSight_Player == null) UnSight_Player = new List<Unit_Manager>();
         UnSight_Player.Clear();
         Unview_Sighted = null;
         seek = false;
+        Watching = true;
         for (int i = -2; i < 3; i++)
         {
             switch (dir)
@@ -826,11 +829,11 @@ public class Enemy_Manager : Unit_Manager
         }
     }
 
-
     public virtual bool CoverCheck(Unit_Manager _Unit,int behind = 0)
     {
         int X = 0, Y = 0;
         List<Tile> _Cover = new List<Tile>();
+        
         if (Mathf.Abs(_Unit.x - x) >= Mathf.Abs(_Unit.y - y))
         {
             if (x - _Unit.x > 0)
@@ -976,6 +979,9 @@ public class Enemy_Manager : Unit_Manager
     {
         int X = 0, Y = 0;
         List<Tile> _Cover = new List<Tile>();
+        stay = 1;
+
+
         if (Mathf.Abs(_Unit.x - x) >= Mathf.Abs(_Unit.y - y))
         {
             if (x - _Unit.x > 0)

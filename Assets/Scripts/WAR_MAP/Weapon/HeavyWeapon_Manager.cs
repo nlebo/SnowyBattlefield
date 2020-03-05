@@ -66,6 +66,22 @@ public class HeavyWeapon_Manager : Weapon_Manager {
 					}
 				}
 			}
+
+            if (hit.transform != null && hit.transform.tag == "Enemy")
+            {
+                Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
+
+                if (!_UI.HitRate.gameObject.activeInHierarchy)
+                {
+                    _UI.HitRate.gameObject.SetActive(true);
+                    _UI.HitRateText.text = _Unit.GetHitRate(this).ToString() + "%";
+                }
+            }
+
+            else
+            {
+                if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
+            }
 		}
 
 		if (Input.GetMouseButtonDown(0))
@@ -119,6 +135,7 @@ public class HeavyWeapon_Manager : Weapon_Manager {
 						Unit.Weapons.Remove(this);
 						Unit.Select();
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
+						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
 						Destroy(gameObject);
 					}
 				}

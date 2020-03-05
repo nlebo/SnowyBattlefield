@@ -88,7 +88,7 @@ public class Unit_Manager : MonoBehaviour {
 
 		Board_Manager.m_Board_Manager.Loading++;
 		Name = UI_Manager.EUFirstName[Random.Range(0, UI_Manager.EUFirstName.Length)] + " " + UI_Manager.EULastName[Random.Range(0, UI_Manager.EULastName.Length)];
-
+		ChangeHP_Bar();
 	}
 
 	public void Init()
@@ -197,64 +197,7 @@ public class Unit_Manager : MonoBehaviour {
 
 	public virtual bool Hit(Weapon_Manager _Weapon)
 	{
-		float Total = _Weapon.Unit.aim + _Weapon.Unit.PostureBonus + _Weapon.Aim_Bonus;
-		int Pressure_Bonus = pressure - ((pressure / 100) * (will / 2));
-		int E_Pressure_Bonus = _Weapon.Unit.pressure - ((_Weapon.Unit.pressure / 100) * (_Weapon.Unit.will / 2));
-		Total -= (DynamicVisualAcuity + PostureBonus);
-		int I_Y = 0, I_X = 0;
-
-		#region CoverBonus
-		if (Mathf.Abs(x - _Weapon.Unit.x) > Mathf.Abs(y - _Weapon.Unit.y))
-		{
-			I_Y = 0;
-
-			if (x > _Weapon.Unit.x) I_X = -1;
-			else I_X = 1;
-		}
-		else
-		{
-			I_X = 0;
-
-			if (y > _Weapon.Unit.y) I_Y = -1;
-			else I_Y = 1;
-		}
-
-		if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Full)
-		{
-			CoverBonus = 50;
-			Total -= (CoverBonus - PostureBonus);
-		}
-		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Half && (_Posture == Posture.Crouching || _Posture == Posture.Prone))
-		{
-			CoverBonus = 30;
-			Total -= (CoverBonus - PostureBonus);
-		}
-		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Low && _Posture == Posture.Prone)
-		{
-			CoverBonus = 70;
-			Total -= (CoverBonus - PostureBonus);
-		}
-
-		//enemy
-		if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Half && _Weapon.Unit._Posture == Posture.Crouching)
-		{
-			Total += (10 - _Weapon.Unit.PostureBonus);
-		}
-		else if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Full)
-		{
-			Total -= _Weapon.Unit.PostureBonus;
-		}
-		#endregion
-
-		#region Pressure Bonus
-		if (Pressure_Bonus >= 90) Total -= 8;
-		else if (Pressure_Bonus >= 80) Total -= 5;
-		else if (Pressure_Bonus >= 60) Total -= 2;
-
-		if (E_Pressure_Bonus >= 90) Total -= 20;
-		else if (E_Pressure_Bonus >= 80) Total -= 10;
-		else if (E_Pressure_Bonus >= 60) Total -= 5;
-		#endregion
+		float Total = GetHitRate(_Weapon);
 
 		Damage_UI _UI = Instantiate(UI_Manager.Damage.gameObject, transform.position, Quaternion.identity).GetComponent<Damage_UI>();
 		int rand = Random.Range(0, 100);
@@ -401,4 +344,67 @@ public class Unit_Manager : MonoBehaviour {
         Mental_Bar.fillAmount = pressure / 100f;
     }
 
+	public int GetHitRate(Weapon_Manager _Weapon)
+	{
+		float Total = _Weapon.Unit.aim + _Weapon.Unit.PostureBonus + _Weapon.Aim_Bonus;
+		int Pressure_Bonus = pressure - ((pressure / 100) * (will / 2));
+		int E_Pressure_Bonus = _Weapon.Unit.pressure - ((_Weapon.Unit.pressure / 100) * (_Weapon.Unit.will / 2));
+		Total -= (DynamicVisualAcuity + PostureBonus);
+		int I_Y = 0, I_X = 0;
+
+		#region CoverBonus
+		if (Mathf.Abs(x - _Weapon.Unit.x) > Mathf.Abs(y - _Weapon.Unit.y))
+		{
+			I_Y = 0;
+
+			if (x > _Weapon.Unit.x) I_X = -1;
+			else I_X = 1;
+		}
+		else
+		{
+			I_X = 0;
+
+			if (y > _Weapon.Unit.y) I_Y = -1;
+			else I_Y = 1;
+		}
+
+		if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Full)
+		{
+			CoverBonus = 50;
+			Total -= (CoverBonus - PostureBonus);
+		}
+		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Half && (_Posture == Posture.Crouching || _Posture == Posture.Prone))
+		{
+			CoverBonus = 30;
+			Total -= (CoverBonus - PostureBonus);
+		}
+		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Low && _Posture == Posture.Prone)
+		{
+			CoverBonus = 70;
+			Total -= (CoverBonus - PostureBonus);
+		}
+
+		//enemy
+		if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Half && _Weapon.Unit._Posture == Posture.Crouching)
+		{
+			Total += (10 - _Weapon.Unit.PostureBonus);
+		}
+		else if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Full)
+		{
+			Total -= _Weapon.Unit.PostureBonus;
+		}
+		#endregion
+
+		#region Pressure Bonus
+		if (Pressure_Bonus >= 90) Total -= 8;
+		else if (Pressure_Bonus >= 80) Total -= 5;
+		else if (Pressure_Bonus >= 60) Total -= 2;
+
+		if (E_Pressure_Bonus >= 90) Total -= 20;
+		else if (E_Pressure_Bonus >= 80) Total -= 10;
+		else if (E_Pressure_Bonus >= 60) Total -= 5;
+		#endregion
+
+		return (int)Total;
+	}
 }
