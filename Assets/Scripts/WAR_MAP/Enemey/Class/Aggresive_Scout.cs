@@ -19,8 +19,10 @@ public class Aggresive_Scout : Enemy_Manager
     }
     public override bool Attack()
     {
-        if(Player_See.Count > 0)
+        if(Player_See.Count > 0){
+            SpecialFlag = false;
             return base.Attack();
+        }
         else
         {
             seek = false;
@@ -31,7 +33,16 @@ public class Aggresive_Scout : Enemy_Manager
 
     public override bool CoverCheck(Unit_Manager _Unit)
     {
-        return base.CoverCheck(_Unit);
+        if(Player_See.Count > 0){
+            SpecialFlag = false;
+            return base.CoverCheck(_Unit);
+        }
+        else
+        {
+            seek = false;
+            loop = true;
+            return false;
+        }
     }
 
     public override void Scout_A_Star(int _x, int _y, int px, int py, int count, int deep)
@@ -58,7 +69,7 @@ public class Aggresive_Scout : Enemy_Manager
         #region MoveInform
         if (_x - 1 >= 0)
         {
-            if (CheckLoot(_x=1,y) && _Tile.TileMap[_x - 1][_y] != Tile_Manager.Cover_Kind.HighCover && _x - 1 != px)
+            if (CheckLoot(_x - 1,y) && _Tile.TileMap[_x - 1][_y] != Tile_Manager.Cover_Kind.HighCover && _x - 1 != px)
             {
                 if (_Tile.TileMap[_x - 1][_y] == Tile_Manager.Cover_Kind.HalfCover)
                     _Cost[0]++;
@@ -71,7 +82,7 @@ public class Aggresive_Scout : Enemy_Manager
 
         if (_x + 1 < _Tile.TileMap.Count)
         {
-            if (CheckLoot(_x=1,y) && _Tile.TileMap[_x + 1][_y] != Tile_Manager.Cover_Kind.HighCover && _x + 1 != px)
+            if (CheckLoot(_x + 1,y) && _Tile.TileMap[_x + 1][_y] != Tile_Manager.Cover_Kind.HighCover && _x + 1 != px)
             {
                 if (_Tile.TileMap[_x + 1][_y] == Tile_Manager.Cover_Kind.HalfCover)
                     _Cost[1]++;
@@ -87,7 +98,7 @@ public class Aggresive_Scout : Enemy_Manager
 
         if (_y - 1 >= 0)
         {
-            if (CheckLoot(_x=1,y) && _Tile.TileMap[_x][_y - 1] != Tile_Manager.Cover_Kind.HighCover && _y - 1 != py)
+            if (CheckLoot(_x,y - 1) && _Tile.TileMap[_x][_y - 1] != Tile_Manager.Cover_Kind.HighCover && _y - 1 != py)
             {
                 if (_Tile.TileMap[_x][_y - 1] == Tile_Manager.Cover_Kind.HalfCover)
                     _Cost[2]++;
@@ -101,7 +112,7 @@ public class Aggresive_Scout : Enemy_Manager
             }
         }
 
-        if (CheckLoot(_x=1,y) && _y + 1 < _Tile.TileMap[_x].Count)
+        if (CheckLoot(_x,y + 1) && _y + 1 < _Tile.TileMap[_x].Count)
         {
             if (_Tile.TileMap[_x][_y + 1] != Tile_Manager.Cover_Kind.HighCover && _y + 1 != py)
             {
@@ -206,3 +217,4 @@ public class Aggresive_Scout : Enemy_Manager
         return true;
     }
 }
+

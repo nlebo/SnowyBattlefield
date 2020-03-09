@@ -42,7 +42,7 @@ public class Charge : Tactical_Head
                 _IDLE = StartCoroutine(IDLE());
                 break;
             case Enemy_Manager.CLASS.AggresiveScout:
-                _IDLE = StartCoroutine(ScoutIDLE());
+                _IDLE = _this.SpecialFlag == true ? StartCoroutine(ScoutIDLE()) : StartCoroutine(IDLE());
                 break;
         }
     }
@@ -50,7 +50,17 @@ public class Charge : Tactical_Head
     public override void Meet()
     {
         base.Meet();
-        _MEET = StartCoroutine(MEET());
+
+        switch (_this._CLASS)
+        {
+            case Enemy_Manager.CLASS.Default:
+                _MEET = StartCoroutine(MEET());
+                break;
+            case Enemy_Manager.CLASS.AggresiveScout:
+                _MEET = _this.SpecialFlag == true ? StartCoroutine(AgressiveScoutMEET()) : StartCoroutine(MEET());
+                break;
+        }
+        
     }
 
     IEnumerator IDLE()
@@ -134,6 +144,7 @@ public class Charge : Tactical_Head
         if(_this.Player_See.Count > 0)
         {
             _this.seek = true;
+             _Idle = true;
             StopCoroutine(_IDLE);
             yield return null;
         }
@@ -157,7 +168,62 @@ public class Charge : Tactical_Head
             UnTageed_Player.Remove(_this.GetMeetPlayer()[_this.CloserPlayer()]);
         }
 
+        for(int i = 0;i<_Players.Count;i++)
+        {
+            if(!Tag_Player.Contains(_Players[i]))
+            {
+                break;
+            }
+
+            if(i == _Players.Count - 1) _this.SpecialFlag = false;
+        }
+
+         _Idle = true;
         yield return null;
     }
+    IEnumerator AgressiveScoutMEET()
+    {
+         _this.Tracking = false;
 
+        if (_this.GetMeetPlayer().Count > _this.CloserPlayer())
+        {
+
+            if (!_this.CoverCheck(_this.GetMeetPlayer()[_this.CloserPlayer()]))
+            {
+                if (_this.SpecialFlag)
+                {
+                    _IDLE = StartCoroutine(ScoutIDLE());
+                   while(!_Idle)
+                   {
+                       yield return null;
+                   }
+                   yield return null;
+                }
+                else
+                {
+                    _this.MovingNow = false;
+                    _this.StartMove();
+                    while (!_this.MovingNow)
+                    {
+                        yield return null;
+                    }
+                }
+
+            }
+
+            if (_this.CloserPlayer() != -1)
+            {
+                while (_this.Attack())
+                {
+                    if (_this.GetMeetPlayer()[_this.CloserPlayer()] == null) break;
+                    yield return new WaitForSeconds(3f);
+                }
+            }
+            
+
+        }
+
+        _Meet = true;
+        yield return null;
+    }
 }
