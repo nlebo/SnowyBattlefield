@@ -491,8 +491,10 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.ExpandButton.gameObject.SetActive(false);
         if(Weapons[ChoosWeapon] != null)
         Weapons[ChoosWeapon].Unselect();
-        else
+        else{
             Weapons.RemoveAt(ChoosWeapon);
+            ChoosWeapon = 0;
+        }
 		
 		for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
 		{
