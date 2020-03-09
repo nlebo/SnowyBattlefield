@@ -44,6 +44,9 @@ public class Charge : Tactical_Head
             case Enemy_Manager.CLASS.AggresiveScout:
                 _IDLE = _this.SpecialFlag == true ? StartCoroutine(ScoutIDLE()) : StartCoroutine(IDLE());
                 break;
+            case Enemy_Manager.CLASS.DefensiveScout:
+                _IDLE = _this.SpecialFlag == true ? StartCoroutine(ScoutIDLE()) : StartCoroutine(IDLE());
+                break;
         }
     }
 
@@ -58,6 +61,9 @@ public class Charge : Tactical_Head
                 break;
             case Enemy_Manager.CLASS.AggresiveScout:
                 _MEET = _this.SpecialFlag == true ? StartCoroutine(AgressiveScoutMEET()) : StartCoroutine(MEET());
+                break;
+                case Enemy_Manager.CLASS.DefensiveScout:
+                _MEET = _this.SpecialFlag == true ? StartCoroutine(DefensiveScoutMEET()) : StartCoroutine(MEET());
                 break;
         }
         
@@ -101,7 +107,7 @@ public class Charge : Tactical_Head
 
     IEnumerator MEET()
     {
-        
+
         _this.Tracking = false;
 
         if (_this.GetMeetPlayer().Count > _this.CloserPlayer())
@@ -136,15 +142,15 @@ public class Charge : Tactical_Head
 
     IEnumerator ScoutIDLE()
     {
-        
+
         Unit_Manager CloserPlayer = _this.CloserPlayer(ref UnTageed_Player);
-        Vector2 _Goal = new Vector2(CloserPlayer.x,CloserPlayer.y);
+        Vector2 _Goal = new Vector2(CloserPlayer.x, CloserPlayer.y);
         _this.ScoutMakeNav(Goal);
 
-        if(_this.Player_See.Count > 0)
+        if (_this.Player_See.Count > 0)
         {
             _this.seek = true;
-             _Idle = true;
+            _Idle = true;
             StopCoroutine(_IDLE);
             yield return null;
         }
@@ -163,27 +169,28 @@ public class Charge : Tactical_Head
             yield return null;
         }
 
-        if(_this.seek){
+        if (_this.seek)
+        {
             Tag_Player.Add(_this.GetMeetPlayer()[_this.CloserPlayer()]);
             UnTageed_Player.Remove(_this.GetMeetPlayer()[_this.CloserPlayer()]);
         }
 
-        for(int i = 0;i<_Players.Count;i++)
+        for (int i = 0; i < _Players.Count; i++)
         {
-            if(!Tag_Player.Contains(_Players[i]))
+            if (!Tag_Player.Contains(_Players[i]))
             {
                 break;
             }
 
-            if(i == _Players.Count - 1) _this.SpecialFlag = false;
+            if (i == _Players.Count - 1) _this.SpecialFlag = false;
         }
 
-         _Idle = true;
+        _Idle = true;
         yield return null;
     }
     IEnumerator AgressiveScoutMEET()
     {
-         _this.Tracking = false;
+        _this.Tracking = false;
 
         if (_this.GetMeetPlayer().Count > _this.CloserPlayer())
         {
@@ -193,11 +200,11 @@ public class Charge : Tactical_Head
                 if (_this.SpecialFlag)
                 {
                     _IDLE = StartCoroutine(ScoutIDLE());
-                   while(!_Idle)
-                   {
-                       yield return null;
-                   }
-                   yield return null;
+                    while (!_Idle)
+                    {
+                        yield return null;
+                    }
+                    yield return null;
                 }
                 else
                 {
@@ -219,6 +226,44 @@ public class Charge : Tactical_Head
                     yield return new WaitForSeconds(3f);
                 }
             }
+
+
+        }
+
+        _Meet = true;
+        yield return null;
+    }
+    IEnumerator DefensiveScoutMEET()
+    {
+        _this.Tracking = false;
+
+        if (_this.GetMeetPlayer().Count > _this.CloserPlayer())
+        {
+
+            if (!_this.CoverCheck(_this.GetMeetPlayer()[_this.CloserPlayer()]))
+            {
+                if (_this.SpecialFlag)
+                    MakeBehindRoot(_this.GetMeetPlayer()[_this.CloserPlayer()]);
+
+
+                _this.MovingNow = false;
+                _this.StartMove();
+                while (!_this.MovingNow)
+                {
+                    yield return null;
+                }
+
+
+            }
+
+            if (_this.CloserPlayer() != -1)
+            {
+                while (_this.Attack())
+                {
+                    if (_this.GetMeetPlayer()[_this.CloserPlayer()] == null) break;
+                    yield return new WaitForSeconds(3f);
+                }
+            }
             
 
         }
@@ -226,4 +271,36 @@ public class Charge : Tactical_Head
         _Meet = true;
         yield return null;
     }
+
+    public void MakeBehindRoot(Unit_Manager _Player)
+    {
+        Vector2 _Goal = new Vector2(_this.x, _this.y);
+        int X, Y;
+        X = 0;
+        Y = 0;
+        int deep = 1;
+        int RemainPoint = _this.Now_Action_Point;
+
+        if (Mathf.Abs(_this.x - _Player.x) >= Mathf.Abs(_this.y - _Player.y)) X = _this.x >= _Player.x ? 1 : -1;
+        else Y = _this.y >= _Player.y ? 1 : -1;
+        
+
+
+        while (RemainPoint > 0)
+        {
+            RemainPoint--;
+
+            RemainPoint = _Tile.TileMap[_this.x + (X * deep)][_this.y + (Y * deep)] == Tile_Manager.Cover_Kind.HalfCover ? RemainPoint - 1 : RemainPoint;
+
+            if (_this.x + (X * deep) < 0 || _this.x + (X * deep) >= _Tile.X) break;
+            else if (_this.y + (Y * deep) < 0 || _this.y + (Y * deep) >= _Tile.Y) break;
+
+            _Goal.x = _this.x + (X * deep);
+            _Goal.y = _this.y + (Y * deep);
+            if (Mathf.Abs(_Player.x - (_this.x + (X * deep))) + Mathf.Abs(_Player.y - (_this.y + (Y * deep))) > _Player.View.ViewRange) break;
+            deep++;
+        }
+        _this.MakeNav(_Goal);
+    }
+
 }

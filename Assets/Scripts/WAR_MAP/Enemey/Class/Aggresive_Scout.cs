@@ -19,7 +19,7 @@ public class Aggresive_Scout : Enemy_Manager
     }
     public override bool Attack()
     {
-        if(Player_See.Count > 0){
+        if(Player_See.Count > 0 || !SpecialFlag){
             SpecialFlag = false;
             return base.Attack();
         }
@@ -33,7 +33,7 @@ public class Aggresive_Scout : Enemy_Manager
 
     public override bool CoverCheck(Unit_Manager _Unit)
     {
-        if(Player_See.Count > 0){
+        if(Player_See.Count > 0 || !SpecialFlag){
             SpecialFlag = false;
             return base.CoverCheck(_Unit);
         }

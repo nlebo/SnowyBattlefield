@@ -114,29 +114,16 @@ public class Shot_Run : Tactical_Head
         int deep = 1;
         int RemainPoint = _this.Now_Action_Point;
 
-        if (Mathf.Abs(_this.x - _Player.x) >= Mathf.Abs(_this.y - _Player.y))
-        {
-            if (_this.x >= _Player.x) X = 1;
-            else X = -1;
-        }
-        else
-        {
-            if (_this.y >= _Player.y) Y = 1;
-            else Y = -1;
-        }
+        if (Mathf.Abs(_this.x - _Player.x) >= Mathf.Abs(_this.y - _Player.y)) X = _this.x >= _Player.x ? 1 : -1;
+        else Y = _this.y >= _Player.y ? 1 : -1;
+        
 
 
         while (RemainPoint > 0)
         {
             RemainPoint--;
 
-            if (_Tile.TileMap[_this.x + (X * deep)][_this.y + (Y * deep)] == Tile_Manager.Cover_Kind.HalfCover)
-            {
-                if (RemainPoint > 0)
-                    RemainPoint--;
-                else
-                    break;
-            }
+            RemainPoint = _Tile.TileMap[_this.x + (X * deep)][_this.y + (Y * deep)] == Tile_Manager.Cover_Kind.HalfCover ? RemainPoint - 1 : RemainPoint;
 
             if (_this.x + (X * deep) < 0 || _this.x + (X * deep) >= _Tile.X) break;
             else if (_this.y + (Y * deep) < 0 || _this.y + (Y * deep) >= _Tile.Y) break;
