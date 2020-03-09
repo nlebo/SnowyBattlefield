@@ -35,6 +35,8 @@ public class Weapon_Manager : MonoBehaviour {
 		_UI._Clip.gameObject.SetActive(true);
 		_UI._Clip.text = Bullet.ToString() +  " / "  + MaxBullet.ToString();
 		_Tile = Tile_Manager.m_Tile_Manager;
+		_UI.Weapon_Name.gameObject.SetActive(true);
+		_UI.Weapon_Name.text = Weapon_Name;
 	}
 
 	public virtual void BTN1()
@@ -66,6 +68,7 @@ public class Weapon_Manager : MonoBehaviour {
 	{
 
 		Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
+		_UI.Weapon_Name.gameObject.SetActive(false);
 	}
 
 	public virtual bool Rand(Unit_Manager _Unit)

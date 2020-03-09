@@ -20,6 +20,7 @@ public class UI_MANAGER : MonoBehaviour {
 	public Text Name;
 	public Text _FPS;
 	public Text HitRateText;
+	public Text Weapon_Name;
 	public TextMesh Damage;
 
 	[Header("GameObject")]

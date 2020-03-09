@@ -733,9 +733,9 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.Crouching_Button.gameObject.SetActive(true);
                 UI_Manager.Proneing_Button.gameObject.SetActive(true);
             });
-            UI_Manager.Standing_Button.onClick.AddListener(() => { Change_Posture(Posture.Standing); });
-            UI_Manager.Crouching_Button.onClick.AddListener(() => { Change_Posture(Posture.Crouching); });
-            UI_Manager.Proneing_Button.onClick.AddListener(() => { Change_Posture(Posture.Prone); });
+            UI_Manager.Standing_Button.onClick.AddListener(() => { Change_Posture(Posture.Standing);  StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
+            UI_Manager.Crouching_Button.onClick.AddListener(() => { Change_Posture(Posture.Crouching); StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
+            UI_Manager.Proneing_Button.onClick.AddListener(() => { Change_Posture(Posture.Prone); StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
             UI_Manager.ATTACK_Button.onClick.AddListener(() =>
             {
                 if (DigHasty) return;
@@ -767,6 +767,8 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.Item[0].onClick.AddListener(() => { Items[0].Use(); });
                 if (Items.Count > 1)
                     UI_Manager.Item[1].onClick.AddListener(() => { Items[1].Use(); });
+
+                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast, "Item"));
             });
             UI_Manager.EndTurnButton.onClick.AddListener(() => { _Input.OnClick_EndTurn(); });
             UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChoosWeapon].Reload(); });
@@ -789,11 +791,13 @@ public class Player_Manager : Unit_Manager {
                     else
                         Dig_hasty_fighting_position();
 
+                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast, "Action"));
                 });
 
                 UI_Manager.ExpandButton.onClick.AddListener(() =>
                 {
                     Expand();
+                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast, "Action"));
                 });
             });
             UI_Manager.BackPackButton.onClick.AddListener(() => {
@@ -832,6 +836,7 @@ public class Player_Manager : Unit_Manager {
         UI_Manager._Clip.text = Weapons[ChoosWeapon].Bullet.ToString() + " / " + Weapons[ChoosWeapon].MaxBullet.ToString();
         UI_Manager.EndTurnButton.gameObject.SetActive(true);
         UI_Manager.PosImageChange(_Posture);
+        Weapons[ChoosWeapon].Select();
 
 		switch (_Posture)
         {
@@ -889,6 +894,7 @@ public class Player_Manager : Unit_Manager {
         ChangeMental_Bar();
         return result;
     }
+
     public override bool Dig_hasty_fighting_position()
     {
         DT = T;
