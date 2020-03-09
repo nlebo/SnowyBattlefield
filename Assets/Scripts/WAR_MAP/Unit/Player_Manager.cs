@@ -489,7 +489,10 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.EndTurnButton.gameObject.SetActive(false);
         UI_Manager.DigButton.gameObject.SetActive(false);
         UI_Manager.ExpandButton.gameObject.SetActive(false);
+        if(Weapons[ChoosWeapon] != null)
         Weapons[ChoosWeapon].Unselect();
+        else
+            Weapons.RemoveAt(ChoosWeapon);
 		
 		for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
 		{
@@ -536,10 +539,11 @@ public class Player_Manager : Unit_Manager {
             if (i < Items.Count)
                 Items[i].Unselect();
         }
-        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Weapon_Toast, "Weapon"));
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Attack_Toast, "Attack"));
         StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
         StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast,"Action"));
         StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast,"Posture"));
+        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Weapon_Toast,"Weapon"));
         
 
 
@@ -701,10 +705,16 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.DigButton.onClick.RemoveAllListeners();
                 UI_Manager.ExpandButton.onClick.RemoveAllListeners();
                 UI_Manager.BackPackButton.onClick.RemoveAllListeners();
+                UI_Manager.ChangeWeaponButton.onClick.RemoveAllListeners();
 
                 for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
                 {
                     UI_Manager.Weapon_Button[i].onClick.RemoveAllListeners();
+                }
+
+                for(int i =0; i< UI_Manager.Weapon.Count;i++)
+                {
+                    UI_Manager.Weapon[i].onClick.RemoveAllListeners();
                 }
 
                 for (int i = 0; i < UI_Manager.Item.Count; i++)
@@ -735,17 +745,17 @@ public class Player_Manager : Unit_Manager {
             });
             UI_Manager.Standing_Button.onClick.AddListener(() => { Change_Posture(Posture.Standing);  StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
             UI_Manager.Crouching_Button.onClick.AddListener(() => { Change_Posture(Posture.Crouching); StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
-            UI_Manager.Proneing_Button.onClick.AddListener(() => { Change_Posture(Posture.Prone); StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture"));});
+            UI_Manager.Proneing_Button.onClick.AddListener(() => { Change_Posture(Posture.Prone); StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Posture_Toast, "Posture")); });
             UI_Manager.ATTACK_Button.onClick.AddListener(() =>
             {
                 if (DigHasty) return;
                 InitializeButton();
                 if (!Now_Move) Tile._ReturnOriginal();
 
-                if(UI_Manager.WeaponToasting) return;
+                if (UI_Manager.AttackToasting) return;
 
-                UI_Manager.WeaponToasting = true;
-                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Weapon_Toast,"Weapon"));
+                UI_Manager.AttackToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Attack_Toast, "Attack"));
                 Weapons[ChoosWeapon].Select();
             });
             UI_Manager.Item_Button.onClick.AddListener(() =>
@@ -753,10 +763,10 @@ public class Player_Manager : Unit_Manager {
                 if (DigHasty) return;
                 if (!Now_Move) Tile._ReturnOriginal();
                 InitializeButton();
-                if(UI_Manager.ItemToasting) return;
+                if (UI_Manager.ItemToasting) return;
 
-                UI_Manager.ItemToasting= true;
-                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Item_Toast,"Item"));
+                UI_Manager.ItemToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Item_Toast, "Item"));
 
                 for (int i = 0; i < Items.Count; i++)
                 {
@@ -764,15 +774,26 @@ public class Player_Manager : Unit_Manager {
                     UI_Manager.Item[i].transform.GetChild(0).GetComponent<Text>().text = Items[i].Item_Name;
                 }
 
-                UI_Manager.Item[0].onClick.AddListener(() => { Items[0].Use(); });
+                UI_Manager.Item[0].onClick.AddListener(() =>
+                {
+                    Items[0].Use();
+                    InitializeButton();
+                    if (!Now_Move) Tile._ReturnOriginal();
+                });
                 if (Items.Count > 1)
-                    UI_Manager.Item[1].onClick.AddListener(() => { Items[1].Use(); });
+                    UI_Manager.Item[1].onClick.AddListener(() =>
+                    {
+                        Items[1].Use();
+                        InitializeButton();
+                        if (!Now_Move) Tile._ReturnOriginal();
+                    });
 
-                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast, "Item"));
+
             });
             UI_Manager.EndTurnButton.onClick.AddListener(() => { _Input.OnClick_EndTurn(); });
             UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChoosWeapon].Reload(); });
-            UI_Manager.Action_Button.onClick.AddListener(() => {
+            UI_Manager.Action_Button.onClick.AddListener(() =>
+            {
                 InitializeButton();
 
 
@@ -791,20 +812,24 @@ public class Player_Manager : Unit_Manager {
                     else
                         Dig_hasty_fighting_position();
 
-                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast, "Action"));
+                    InitializeButton();
+                    if (!Now_Move) Tile._ReturnOriginal();
                 });
 
                 UI_Manager.ExpandButton.onClick.AddListener(() =>
                 {
                     Expand();
-                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Action_Toast, "Action"));
+                    InitializeButton();
+                    if (!Now_Move) Tile._ReturnOriginal();
                 });
             });
-            UI_Manager.BackPackButton.onClick.AddListener(() => {
+            UI_Manager.BackPackButton.onClick.AddListener(() =>
+            {
                 if (DigHasty) return;
                 InitializeButton();
 
-                if (!UI_Manager.Inventory.activeInHierarchy){
+                if (!UI_Manager.Inventory.activeInHierarchy)
+                {
                     UI_Manager.Inventory.SetActive(true);
                     UI_Manager.Chest.SetActive(true);
                     UI_Manager.Vest.SetActive(true);
@@ -812,6 +837,43 @@ public class Player_Manager : Unit_Manager {
                 }
                 else
                     UI_Manager.Inventory.SetActive(false);
+            });
+            UI_Manager.ChangeWeaponButton.onClick.AddListener(() =>
+            {
+                if (DigHasty) return;
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+
+                if (UI_Manager.AttackToasting) return;
+
+                UI_Manager.WeaponToasting = true;
+                StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Weapon_Toast, "Weapon"));
+
+                UI_Manager.Weapon[0].onClick.AddListener(() =>
+                {
+                    if (ChoosWeapon == 0 || Now_Action_Point < 1) return;
+                    Now_Action_Point--;
+                    ChoosWeapon = 0;
+                    InitializeButton();
+                    if (!Now_Move) Tile._ReturnOriginal();
+                });
+
+                UI_Manager.Weapon[0].GetComponentInChildren<Text>().text = Weapons[0].Weapon_Name;
+                UI_Manager.Weapon[0].gameObject.SetActive(true);
+                if (Weapons.Count > 1)
+                {
+                    UI_Manager.Weapon[1].onClick.AddListener(() =>
+                    {
+                        if (ChoosWeapon == 1 || Now_Action_Point < 1) return;
+
+                        Now_Action_Point--;
+                        ChoosWeapon = 1;
+                        InitializeButton();
+                        if (!Now_Move) Tile._ReturnOriginal();
+                    });
+                    UI_Manager.Weapon[1].GetComponentInChildren<Text>().text = Weapons[1].Weapon_Name;
+                    UI_Manager.Weapon[1].gameObject.SetActive(true);
+                }
             });
             UI_Manager._Unit = this;
 

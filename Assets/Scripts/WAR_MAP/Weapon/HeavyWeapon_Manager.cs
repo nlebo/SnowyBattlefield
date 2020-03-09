@@ -132,8 +132,9 @@ public class HeavyWeapon_Manager : Weapon_Manager {
 						Btn1 = false;
 						Btn2 = false;
 						Action = false;
-						Unit.Weapons.Remove(this);
+						//Unit.Weapons.Remove(this);
 						Unit.Select();
+						Unselect();
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
 						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
 						Destroy(gameObject);

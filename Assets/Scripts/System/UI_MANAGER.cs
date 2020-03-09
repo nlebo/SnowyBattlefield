@@ -46,6 +46,7 @@ public class UI_MANAGER : MonoBehaviour {
 	public Button DigButton;
 	public Button ExpandButton;
 	public Button BackPackButton;
+	public Button ChangeWeaponButton;
 
 	[Header("Image")]
     public Image Delete_AP_Bar;
@@ -62,11 +63,11 @@ public class UI_MANAGER : MonoBehaviour {
 	
 
 	[Header("ToastBar")]
-	public GameObject Weapon_Toast;
+	public GameObject Attack_Toast;
 	public GameObject Item_Toast;
 	public GameObject Action_Toast;
 	public GameObject Posture_Toast;
-
+	public GameObject Weapon_Toast;
 
 	[Header("ETC")]
 	public string[] RFirstName,RLastName;
@@ -83,7 +84,7 @@ public class UI_MANAGER : MonoBehaviour {
 	float FPS_Time;
 
     [HideInInspector]
-	public bool WeaponToasting;
+	public bool AttackToasting;
 
 	[HideInInspector]
 	public bool ItemToasting;
@@ -94,6 +95,9 @@ public class UI_MANAGER : MonoBehaviour {
 	[HideInInspector]
 	public bool PostureToasting;
 
+	[HideInInspector]
+	public bool WeaponToasting;
+
 	void Awake()
 	{
 		m_UI_MANAGER = this;
@@ -101,7 +105,7 @@ public class UI_MANAGER : MonoBehaviour {
 
 		NowFPS = 0;
 		FPS_Time = 0;
-		WeaponToasting = false;
+		AttackToasting = false;
 		Application.targetFrameRate = 120;
 		StartCoroutine(FPS());
 	}
@@ -229,10 +233,11 @@ public class UI_MANAGER : MonoBehaviour {
             }
 
             _Rect.anchoredPosition = _Base;
-			if(What == "Weapon") WeaponToasting = false;
+			if(What == "Attack") AttackToasting = false;
 			else if(What == "Item") ItemToasting = false;
 			else if(What == "Action")ActionToasting = false;
 			else if(What == "Posture")PostureToasting = false;
+			else if(What == "Weapon") WeaponToasting = false;
             yield return null;
         }
 	}
@@ -243,10 +248,11 @@ public class UI_MANAGER : MonoBehaviour {
 		{
 			yield return null;
 		}
-		else if(What == "Weapon" && WeaponToasting)Toast.SetActive(false);
+		else if(What == "Attack" && AttackToasting)Toast.SetActive(false);
 		else if(What == "Item" && ItemToasting) Toast.SetActive(false);
 		else if(What == "Action" && ActionToasting)Toast.SetActive(false);
 		else if(What == "Posture"&& PostureToasting)Toast.SetActive(false);
+		else if(What == "Weapon" && WeaponToasting)Toast.SetActive(false);
         else
         {
             RectTransform _Rect = Toast.GetComponent<RectTransform>();
@@ -269,10 +275,11 @@ public class UI_MANAGER : MonoBehaviour {
 
 			Toast.SetActive(false);
 			_Rect.anchoredPosition = _Base;
-			if(What == "Weapon") WeaponToasting = false;
+			if(What == "Attack") AttackToasting = false;
 			else if(What == "Item") ItemToasting = false;
 			else if(What == "Action")ActionToasting = false;
 			else if(What == "Posture")PostureToasting = false;
+			else if(What == "Weapon")WeaponToasting = false;
             yield return null;
         }
 	}
