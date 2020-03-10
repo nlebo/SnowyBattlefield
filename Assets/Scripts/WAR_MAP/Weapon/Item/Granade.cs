@@ -85,6 +85,7 @@ public class Granade : Item_Manager {
                                     if (x != _Tile.X && y != _Tile.Y) continue;
 
                                     _Tile._Tile.MY_Tile[x][y].DownGrade();
+									_Tile._Tile.MY_Tile[x][y].Flash(2);
 
                                     if (_Tile._Tile.MY_Tile[x][y].transform.childCount > 0)
                                     {
@@ -147,6 +148,7 @@ public class Granade : Item_Manager {
                                     if (x != _Tile.X && y != _Tile.Y) continue;
 
                                     _Tile._Tile.MY_Tile[x][y].DownGrade();
+									_Tile._Tile.MY_Tile[x][y].Flash(2);
 
                                     if (_Tile._Tile.MY_Tile[x][y].transform.childCount > 0)
                                     {

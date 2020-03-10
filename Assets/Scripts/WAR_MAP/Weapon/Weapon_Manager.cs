@@ -104,13 +104,13 @@ public class Weapon_Manager : MonoBehaviour {
                 break;
         }
 
-        if (Unit.x + I_X >= 0 && Unit.x + I_X < _Tile.X && Unit.y + I_Y >= 0 && Unit.y < _Tile.Y)
+        if (Unit.x + I_X >= 0 && Unit.x + I_X < _Tile.X && Unit.y + I_Y >= 0 && Unit.y + I_Y < _Tile.Y)
         {
             if (_Tile.MY_Tile[Unit.x + I_X][Unit.y + I_Y].View == Tile.View_Kind.Half && (Unit._Posture == Unit_Manager.Posture.Crouching || Unit._Posture == Unit_Manager.Posture.Prone))
             {
                 Total += (10 - Unit.PostureBonus);
             }
-            else if (_Tile.MY_Tile[Unit.x - I_X][Unit.y - I_Y].View == Tile.View_Kind.Full)
+            else if (_Tile.MY_Tile[Unit.x + I_X][Unit.y + I_Y].View == Tile.View_Kind.Full)
             {
                 Total -= Unit.PostureBonus;
             }

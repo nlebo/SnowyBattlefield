@@ -37,6 +37,9 @@ public class Tile : MonoBehaviour{
     public Tile_Manager _Tile;
     Color orginal_color;
     Color Prev_Highlighted;
+
+    public Coroutine FlashTile;
+    float RemainTime;
     #endregion
 
     public void Start()
@@ -54,6 +57,7 @@ public class Tile : MonoBehaviour{
         Action = null;
         Board_Manager.m_Board_Manager.Loading++;
         _ReturnOriginal += ReturnOrginal;
+        RemainTime = 0;
 
     }
 
@@ -234,7 +238,7 @@ public class Tile : MonoBehaviour{
     public void UnHighLight()
     {
 
-        GetComponent<SpriteRenderer>().color = Prev_Highlighted;
+        GetComponent<SpriteRenderer>().color = RemainTime == -1 ? orginal_color : Prev_Highlighted;
         Highlighted = false;
         if (gameObject.layer != prevLayer)
             gameObject.layer = prevLayer;
@@ -266,6 +270,33 @@ public class Tile : MonoBehaviour{
         if (_obstacle != null)
             _obstacle.Change();
         Action.Tile_InSighted += UnSight;
+    }
+
+    public void Flash(int second)
+    {
+        if(RemainTime < second){
+            if(FlashTile != null) StopCoroutine(FlashTile);
+
+            FlashTile = StartCoroutine(_FlashTile(second));
+        }
+    }
+
+    IEnumerator _FlashTile(int second)
+    {
+        float tTime = 0;
+        HighLight();
+        while(tTime < second)
+        {
+            HighLight();
+            tTime += Time.deltaTime;
+            RemainTime = second - tTime;
+            yield return null;
+        }
+        RemainTime = -1;
+        UnHighLight();
+        RemainTime =0;
+        yield return null;
+
     }
     public void UnSight(Unit_Manager _Action)
     {

@@ -779,15 +779,13 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.Item[0].onClick.AddListener(() =>
                 {
                     Items[0].Use();
-                    InitializeButton();
-                    if (!Now_Move) Tile._ReturnOriginal();
+                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
                 });
                 if (Items.Count > 1)
                     UI_Manager.Item[1].onClick.AddListener(() =>
                     {
                         Items[1].Use();
-                        InitializeButton();
-                        if (!Now_Move) Tile._ReturnOriginal();
+                        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
                     });
 
 
