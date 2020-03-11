@@ -128,7 +128,7 @@ public class Tile : MonoBehaviour{
         ActionPoint -= Action.Now_Move_Point;
         if (!Check)
         {
-            GetComponent<SpriteRenderer>().color -= new Color(0.3f, 0.3f, 0.3f, -1);
+            GetComponent<SpriteRenderer>().color = Color.blue;
             Prev_Highlighted = GetComponent<SpriteRenderer>().color;
 
             if (_obstacle != null)
@@ -188,7 +188,7 @@ public class Tile : MonoBehaviour{
         RealCost = cost;
         if (!Check)
         {
-            GetComponent<SpriteRenderer>().color -= new Color(0.3f, 0.3f, 0.3f, -1);
+            GetComponent<SpriteRenderer>().color = Color.blue ;
             Prev_Highlighted = GetComponent<SpriteRenderer>().color;
 
             if (_obstacle != null)
