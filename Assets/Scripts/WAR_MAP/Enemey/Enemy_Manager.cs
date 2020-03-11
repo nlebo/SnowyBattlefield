@@ -166,7 +166,12 @@ public class Enemy_Manager : Unit_Manager
         if (gameObject.layer != beforeLayer)
             beforeLayer = gameObject.layer;
 
-        StartCoroutine(Behavior());
+        if(Stuned > 0){
+            Stuned--;
+            Board_Manager.m_Board_Manager.EndTurn();
+        }
+        else
+            StartCoroutine(Behavior());
 
     }
 

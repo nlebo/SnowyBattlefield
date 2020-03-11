@@ -74,7 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 84d2aadbea2fecc41a17f89997305912, type: 3}
+  m_Sprite: {fileID: -2167690184122188644, guid: b4ab947280e112848b8542624964835f,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -145,6 +146,8 @@ MonoBehaviour:
   HeadShotPercent: 10
   potential: 1
   will: 30
+  Overpowered: 0
+  Stuned: 0
   Now_Move: 0
   DigHasty: 0
   Expanding: 0

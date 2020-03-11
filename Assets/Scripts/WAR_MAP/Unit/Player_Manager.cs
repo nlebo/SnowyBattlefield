@@ -472,47 +472,7 @@ public class Player_Manager : Unit_Manager {
             }
         }
     }
-    public void UnSelect()
-    {
-        if (!selected) return;
-
-        if (NowChose != null) Destroy(NowChose);
-        InitializeButton();
-        NowChose = null;
-        CanMove = false;
-        UI_Manager.Posture.gameObject.SetActive(false);
-		UI_Manager._Class.gameObject.SetActive(false);
-		UI_Manager.Standing_Button.gameObject.SetActive(false);
-        UI_Manager.Crouching_Button.gameObject.SetActive(false);
-        UI_Manager.Proneing_Button.gameObject.SetActive(false);
-		UI_Manager._Clip.gameObject.SetActive(false);
-        UI_Manager.EndTurnButton.gameObject.SetActive(false);
-        UI_Manager.DigButton.gameObject.SetActive(false);
-        UI_Manager.ExpandButton.gameObject.SetActive(false);
-        if(Weapons[ChoosWeapon] != null)
-        Weapons[ChoosWeapon].Unselect();
-        else{
-            Weapons.RemoveAt(ChoosWeapon);
-            ChoosWeapon = 0;
-        }
-		
-		for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
-		{
-			UI_Manager.Weapon_Button[i].gameObject.SetActive(false);
-		}
-		for (int i = 0; i < UI_Manager.Item.Count; i++)
-		{
-			UI_Manager.Item[i].gameObject.SetActive(false);
-            if (i < Items.Count)
-                Items[i].Unselect();
-        }
-
-		_Input.Selected = null;
-        selected = false;
-		GetComponent<SpriteRenderer>().color = original;
-
-		if (!Now_Move) Tile._ReturnOriginal();
-    }
+    
     public void InitializeButton()
     {
 		#region UIOFF
@@ -659,7 +619,14 @@ public class Player_Manager : Unit_Manager {
         Board_Manager.m_Board_Manager.TurnFlag = 0;
         base.TurnOn();
         Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-        Select();
+
+        if(Stuned > 0)
+        {
+            Stuned --;
+            EndTurn();
+        }
+        else
+            Select();
         
     }
     public override void Death()
@@ -725,7 +692,7 @@ public class Player_Manager : Unit_Manager {
                 }
             }
             UI_Manager.MOVE_BUTTON.onClick.AddListener(() => {
-                if (DigHasty) return;
+                if (DigHasty || Overpowered) return;
                 InitializeButton();
 
                 Check_Move();
@@ -938,6 +905,48 @@ public class Player_Manager : Unit_Manager {
        
 
 	}
+    public void UnSelect()
+    {
+        if (!selected) return;
+
+        if (NowChose != null) Destroy(NowChose);
+        InitializeButton();
+        NowChose = null;
+        CanMove = false;
+        UI_Manager.Posture.gameObject.SetActive(false);
+		UI_Manager._Class.gameObject.SetActive(false);
+		UI_Manager.Standing_Button.gameObject.SetActive(false);
+        UI_Manager.Crouching_Button.gameObject.SetActive(false);
+        UI_Manager.Proneing_Button.gameObject.SetActive(false);
+		UI_Manager._Clip.gameObject.SetActive(false);
+        UI_Manager.EndTurnButton.gameObject.SetActive(false);
+        UI_Manager.DigButton.gameObject.SetActive(false);
+        UI_Manager.ExpandButton.gameObject.SetActive(false);
+        if(Weapons[ChoosWeapon] != null)
+        Weapons[ChoosWeapon].Unselect();
+        else{
+            Weapons.RemoveAt(ChoosWeapon);
+            ChoosWeapon = 0;
+        }
+		
+		for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
+		{
+			UI_Manager.Weapon_Button[i].gameObject.SetActive(false);
+		}
+		for (int i = 0; i < UI_Manager.Item.Count; i++)
+		{
+			UI_Manager.Item[i].gameObject.SetActive(false);
+            if (i < Items.Count)
+                Items[i].Unselect();
+        }
+
+		_Input.Selected = null;
+        selected = false;
+		GetComponent<SpriteRenderer>().color = original;
+
+		if (!Now_Move) Tile._ReturnOriginal();
+    }
+    
     public override bool Hit(Weapon_Manager _Weapon)
     {
         bool result = base.Hit(_Weapon);

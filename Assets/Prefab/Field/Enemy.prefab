@@ -73,8 +73,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 84d2aadbea2fecc41a17f89997305912, type: 3}
-  m_Color: {r: 1, g: 0.6556604, b: 0.6763503, a: 1}
+  m_Sprite: {fileID: 8601271977264726501, guid: b4ab947280e112848b8542624964835f,
+    type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -144,6 +145,8 @@ MonoBehaviour:
   HeadShotPercent: 10
   potential: 1
   will: 30
+  Overpowered: 0
+  Stuned: 0
   Now_Move: 0
   DigHasty: 0
   Expanding: 0
@@ -174,6 +177,7 @@ MonoBehaviour:
   Watching: 0
   Watch_Stop: 0
   loop: 0
+  SpecialFlag: 0
   _CLASS: 0
 --- !u!70 &2489259303713767156
 CapsuleCollider2D:

@@ -39,9 +39,7 @@ public class Unit_Manager : MonoBehaviour {
 	public int							x, y;
 	public int							Char_Num;
 	public int							Painkiller_Count = 0;
-	public int							PostureBonus = 0;
-	public int							CoverBonus = 0;
-
+	
 	#region Stat
 	public float						aim = 40;  //전투시 명중률 % , 이벤트시 x * 3/2 (내림) 
 	public int							DynamicVisualAcuity; // 동체시력
@@ -52,6 +50,14 @@ public class Unit_Manager : MonoBehaviour {
 	public float						potential = 1; // 잠재력
 	public int							will = 30; // 의지
 
+	public int							PostureBonus = 0; // 자세 보너스
+	public int							CoverBonus = 0; // 커버 보너스
+
+
+	#endregion
+	#region Condition
+	public bool Overpowered = false;
+	public int Stuned = 0;
 	#endregion
 
 	public bool							Now_Move = false;
@@ -405,6 +411,11 @@ public class Unit_Manager : MonoBehaviour {
 		else if (E_Pressure_Bonus >= 60) Total -= 5;
 		#endregion
 
+		#region Condition Bonus
+
+		if(_Weapon.Unit.Overpowered) Total -= 20;
+
+		#endregion
 		return (int)Total;
 	}
 }
