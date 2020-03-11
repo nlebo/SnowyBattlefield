@@ -17,6 +17,8 @@ public class Input_Manager : MonoBehaviour {
 
 	public UnityAction EnemyView;
 
+    public ItemUI_Manager DragItem;
+
     int layerMask = 1 << 8;
     int layerMask_Tile = 1 << 8;
 

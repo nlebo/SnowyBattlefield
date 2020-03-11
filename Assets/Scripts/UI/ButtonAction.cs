@@ -6,21 +6,25 @@ using UnityEngine.EventSystems;
 
 public class ButtonAction : MonoBehaviour
 {
+    public Camera UICamera;
     Input_Manager _Input;
-    RectTransform _Transform;
+    public RectTransform _Transform;
     RectTransform _ChildTrans;
     Vector3 MousePos;
     Vector3 Change;
     Vector3 BasePos;
     bool Down;
     // Start is called before the first frame update
-    void Start()
+    virtual protected void Start()
     {
         _Transform = GetComponent<RectTransform>();
 
         if(transform.childCount > 0)
         _ChildTrans = transform.GetChild(0).GetComponent<RectTransform>();
         _Input = Input_Manager.m_InputManager;
+
+        if(UI_MANAGER.m_UI_MANAGER != null)
+        UICamera = UI_MANAGER.m_UI_MANAGER.UICamera;
     }
 
     // Update is called once per frame
@@ -39,13 +43,13 @@ public class ButtonAction : MonoBehaviour
 
     public void SetBarDown()
     {
-        MousePos = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToWorldPoint(Input.mousePosition);
+        MousePos = UICamera.ScreenToWorldPoint(Input.mousePosition);
         BasePos = _ChildTrans.position;
     }
 
     public void SetBarDrag()
     {
-        Change = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToWorldPoint(Input.mousePosition) - MousePos;
+        Change = UICamera.ScreenToWorldPoint(Input.mousePosition) - MousePos;
 
         _ChildTrans.position = BasePos + new Vector3(Change.x, 0, 0);
         
@@ -57,15 +61,15 @@ public class ButtonAction : MonoBehaviour
         _ChildTrans.position = BasePos;
     }
 
-    public void InvenDown()
+    public virtual void InvenDown()
     {
-        MousePos = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToWorldPoint(Input.mousePosition);
+        MousePos = UICamera.ScreenToWorldPoint(Input.mousePosition);
         BasePos = _Transform.position;
     }
 
     public void InvenDrag()
     {
-        Change = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToWorldPoint(Input.mousePosition) - MousePos;
+        Change = UICamera.ScreenToWorldPoint(Input.mousePosition) - MousePos;
 
         _Transform.position = BasePos + new Vector3(Change.x , Change.y, 0);
 
@@ -76,5 +80,6 @@ public class ButtonAction : MonoBehaviour
         MousePos = Vector3.zero;
     }
 
+    
 
 }

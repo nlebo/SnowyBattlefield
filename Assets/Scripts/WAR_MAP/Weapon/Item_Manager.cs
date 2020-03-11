@@ -29,4 +29,6 @@ public class Item_Manager : MonoBehaviour {
 	{
 		Cursor_Manager.m_Cursor_Manager.SetCursor(UI_MANAGER.m_UI_MANAGER.Cursors[1]);
 	}
+
+	
 }
