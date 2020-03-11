@@ -9,6 +9,8 @@ public class Inventory_GridManager : MonoBehaviour
     public int CX, CY;
     public int[,] Grids;
     int ItemNum = 0;
+
+    [SerializeField]
     List<Item_Manager> Items;
 
     private void Start()
@@ -29,6 +31,8 @@ public class Inventory_GridManager : MonoBehaviour
                 Grids[_x, _y] = ItemNum;
             }
         }
+
+        Instantiate(new GameObject(),Vector3.zero,transform.rotation,transform.GetChild(x + (y * 3)));
 
         Items.Add(Item);
         ItemNum++;

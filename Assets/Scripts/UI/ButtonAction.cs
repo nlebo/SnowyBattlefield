@@ -75,7 +75,7 @@ public class ButtonAction : MonoBehaviour
 
     }
 
-    public void InvenUp()
+    public virtual void InvenUp()
     {
         MousePos = Vector3.zero;
     }
