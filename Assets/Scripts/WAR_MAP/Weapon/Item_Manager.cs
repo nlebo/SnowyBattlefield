@@ -7,13 +7,15 @@ public class Item_Manager : MonoBehaviour {
 	public Unit_Manager Unit;
 	public Input_Manager _Input;
 	public Weapon_Manager Weapon;
-
+	public List<Sprite> UI_Image;
+	public bool _Rot = false;
 	public int count;
 	public string Item_Name;
 
 	protected void Start()
 	{
 		_Input = Camera.main.GetComponent<Input_Manager>();
+		
 	}
 
 	public virtual void Use()

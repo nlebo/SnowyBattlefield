@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class Inventory_GridManager : MonoBehaviour
 {
     public int GX, GY;
     public int CX, CY;
     public int[,] Grids;
-    int ItemNum = 0;
+    int ItemNum = 1;
 
     [SerializeField]
     List<Item_Manager> Items;
@@ -23,16 +23,20 @@ public class Inventory_GridManager : MonoBehaviour
     public bool Insert_Item(Item_Manager Item, int x, int y, int sx, int sy)
     {
         if (!Check_CanInsert(x, y, sx, sy)) return false;
-
+        
+        int count = 0;
         for (int _x = x; _x < x + sx; _x++)
         {
             for (int _y = y; _y < y + sy; _y++)
             {
                 Grids[_x, _y] = ItemNum;
+                transform.GetChild(_x + (_y * 3)).GetComponent<Image>().sprite = Item.UI_Image[count];
+                count++;
+                transform.GetChild(_x + (_y * 3)).rotation = Item._Rot ?  Quaternion.Euler(0,0,-90) : Quaternion.Euler(0,0,0);
             }
         }
-
-        Instantiate(new GameObject(),Vector3.zero,transform.rotation,transform.GetChild(x + (y * 3)));
+         
+        
 
         Items.Add(Item);
         ItemNum++;

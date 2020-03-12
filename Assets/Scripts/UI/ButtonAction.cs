@@ -13,7 +13,7 @@ public class ButtonAction : MonoBehaviour
     Vector3 MousePos;
     Vector3 Change;
     Vector3 BasePos;
-    bool Down;
+    protected bool Down;
     // Start is called before the first frame update
     virtual protected void Start()
     {
@@ -67,7 +67,7 @@ public class ButtonAction : MonoBehaviour
         BasePos = _Transform.position;
     }
 
-    public void InvenDrag()
+    public virtual void InvenDrag()
     {
         Change = UICamera.ScreenToWorldPoint(Input.mousePosition) - MousePos;
 
