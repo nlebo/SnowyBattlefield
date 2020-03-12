@@ -20,6 +20,13 @@ public class Inventory_GridManager : MonoBehaviour
         Items = new List<Item_Manager>();
     }
 
+    public bool Insert_Item(Item_Manager Item, int num, int sx,int sy)
+    {
+        int x = num == 0 ? 0 : num % GX;
+        int y = num == 0 ? 0 : num / GX;
+
+        return Insert_Item(Item,x,y,sx,sy);
+    }
     public bool Insert_Item(Item_Manager Item, int x, int y, int sx, int sy)
     {
         if (!Check_CanInsert(x, y, sx, sy)) return false;
@@ -30,9 +37,9 @@ public class Inventory_GridManager : MonoBehaviour
             for (int _y = y; _y < y + sy; _y++)
             {
                 Grids[_x, _y] = ItemNum;
-                transform.GetChild(_x + (_y * 3)).GetComponent<Image>().sprite = Item.UI_Image[count];
+                transform.GetChild(_x + (_y * GX)).GetComponent<Image>().sprite = Item.UI_Image[count];
                 count++;
-                transform.GetChild(_x + (_y * 3)).rotation = Item._Rot ?  Quaternion.Euler(0,0,-90) : Quaternion.Euler(0,0,0);
+                transform.GetChild(_x + (_y * GX)).rotation = Item._Rot ?  Quaternion.Euler(0,0,-90) : Quaternion.Euler(0,0,0);
             }
         }
          
@@ -56,19 +63,7 @@ public class Inventory_GridManager : MonoBehaviour
 
         if (_x == GX && _y == GY) return false;
 
-        int SX = _x + sx;
-        int SY = _y + sy;
-        for (; _x < SX; _x++)
-        {
-            for (; _y < SY; _y++)
-            {
-                Grids[_x, _y] = ItemNum;
-            }
-        }
-
-        Items.Add(Item);
-        ItemNum++;
-        return true;
+        return Insert_Item(Item,_x,_y,sx,sy);
     }
 
     public bool Check_CanInsert(int x, int y, int sx, int sy)

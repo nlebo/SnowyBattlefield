@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GridsInfo : MonoBehaviour
 {
+    public int num;
     public int x,y;
     public Inventory_GridManager Inven;
 

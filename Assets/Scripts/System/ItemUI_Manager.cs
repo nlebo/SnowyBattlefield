@@ -65,7 +65,7 @@ public class ItemUI_Manager : ButtonAction
             Debug.Log(other);
             GridsInfo _grid = other.GetComponent<GridsInfo>();
 
-            _grid.Inven.Insert_Item(_This,_grid.x,_grid.y,sx,sy);
+            _grid.Inven.Insert_Item(_This,_grid.num,sx,sy);
             Input_Manager.m_InputManager.DragItem = null;
             Up=false;
             // Destroy(gameObject);
@@ -79,7 +79,7 @@ public class ItemUI_Manager : ButtonAction
             Debug.Log(other);
             GridsInfo _grid = other.GetComponent<GridsInfo>();
 
-            _grid.Inven.Insert_Item(_This,_grid.x,_grid.y,sx,sy);
+            _grid.Inven.Insert_Item(_This,_grid.num,sx,sy);
             Input_Manager.m_InputManager.DragItem = null;
             Up=false;
             // Destroy(gameObject);
