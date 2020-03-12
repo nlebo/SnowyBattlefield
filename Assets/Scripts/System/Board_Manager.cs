@@ -87,7 +87,7 @@ public class Board_Manager : MonoBehaviour
     }
     public void StartTurn()
     {
-        ImageChange();
+        
         if (Unit_List[Sequence[0] - 1] == null)
         {
             Unit_List.RemoveAt(Sequence[0] - 1);
@@ -100,7 +100,7 @@ public class Board_Manager : MonoBehaviour
             EndTurn();
             return;
         }
-
+        ImageChange();
         Unit_List[Sequence[0] - 1].TurnOn();
         if (Unit_List[Sequence[0] - 1].Set != set)
         {
@@ -168,8 +168,7 @@ public class Board_Manager : MonoBehaviour
 
     public void Death(Unit_Manager _Unit)
     {
-        Sequence.Remove((Unit_List.IndexOf(_Unit) + 1));
-        Unit_List[Unit_List.IndexOf(_Unit)] = null;
+        ResortSequence(_Unit);
     }
 
     public void ImageChange()
@@ -189,5 +188,23 @@ public class Board_Manager : MonoBehaviour
             else
                 images[i].color = col[1];
         }
+    }
+    public Unit_Manager GetUnit(int i)
+    {
+        return Unit_List[Sequence[i]-1];
+    }
+
+    public void ResortSequence(Unit_Manager _Unit)
+    {
+        while(Sequence.Contains(Unit_List.IndexOf(_Unit) + 1)){
+            Sequence.Remove(Unit_List.IndexOf(_Unit) + 1);
+        }
+        
+        for(int i=0; i< Sequence.Count;i++)
+        {
+            Sequence[i] = Sequence[i] < Unit_List.IndexOf(_Unit) + 1 ? Sequence[i] - 1 : Sequence[i];
+        }
+
+        Unit_List.Remove(_Unit);
     }
 }

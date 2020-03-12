@@ -80,6 +80,13 @@ public class ButtonAction : MonoBehaviour
         MousePos = Vector3.zero;
     }
 
+    public void SetImage(int a)
+    {
+        Unit_Manager _unit = Board_Manager.m_Board_Manager.GetUnit(a);
+        Camera.main.transform.position = new Vector3(_unit.transform.position.x, _unit.transform.position.y, -10);
+
+    }
+
     
 
 }

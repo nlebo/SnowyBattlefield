@@ -8,10 +8,12 @@ public class Camera_Move : MonoBehaviour {
 	Vector3 MousePos;
 	Vector3 BasePos;
 	bool ScrollBtn;
+	public static Camera_Move m_Camera_Move;
 
 	// Use this for initialization
 	void Start () {
 		ScrollBtn = false;
+		m_Camera_Move = this;
 	}
 	
 	// Update is called once per frame
