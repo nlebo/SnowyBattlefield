@@ -617,6 +617,7 @@ GameObject:
   - component: {fileID: 103383345}
   - component: {fileID: 103383348}
   - component: {fileID: 103383349}
+  - component: {fileID: 103383350}
   m_Layer: 5
   m_Name: Image (2)
   m_TagString: grid
@@ -764,6 +765,34 @@ MonoBehaviour:
   x: 2
   y: 0
   Inven: {fileID: 0}
+--- !u!114 &103383350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103383343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &167570189
 GameObject:
   m_ObjectHideFlags: 0
@@ -939,6 +968,7 @@ GameObject:
   - component: {fileID: 299013465}
   - component: {fileID: 299013468}
   - component: {fileID: 299013469}
+  - component: {fileID: 299013470}
   m_Layer: 5
   m_Name: Image (8)
   m_TagString: grid
@@ -1086,6 +1116,34 @@ MonoBehaviour:
   x: 2
   y: 2
   Inven: {fileID: 0}
+--- !u!114 &299013470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299013463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 8
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &414002347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1437,6 +1495,7 @@ GameObject:
   - component: {fileID: 684655470}
   - component: {fileID: 684655473}
   - component: {fileID: 684655474}
+  - component: {fileID: 684655475}
   m_Layer: 5
   m_Name: Image (5)
   m_TagString: grid
@@ -1584,6 +1643,34 @@ MonoBehaviour:
   x: 2
   y: 1
   Inven: {fileID: 0}
+--- !u!114 &684655475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684655468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 5
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &710959399
 GameObject:
   m_ObjectHideFlags: 0
@@ -1861,6 +1948,7 @@ GameObject:
   - component: {fileID: 793219322}
   - component: {fileID: 793219325}
   - component: {fileID: 793219326}
+  - component: {fileID: 793219327}
   m_Layer: 5
   m_Name: Image (7)
   m_TagString: grid
@@ -2008,6 +2096,34 @@ MonoBehaviour:
   x: 1
   y: 2
   Inven: {fileID: 0}
+--- !u!114 &793219327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 793219320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 7
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &853630518
 GameObject:
   m_ObjectHideFlags: 0
@@ -2249,6 +2365,7 @@ GameObject:
   - component: {fileID: 1195210941}
   - component: {fileID: 1195210944}
   - component: {fileID: 1195210945}
+  - component: {fileID: 1195210946}
   m_Layer: 5
   m_Name: Image (4)
   m_TagString: grid
@@ -2396,6 +2513,34 @@ MonoBehaviour:
   x: 1
   y: 1
   Inven: {fileID: 0}
+--- !u!114 &1195210946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195210939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 4
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1214202307
 GameObject:
   m_ObjectHideFlags: 0
@@ -2410,6 +2555,7 @@ GameObject:
   - component: {fileID: 1214202309}
   - component: {fileID: 1214202312}
   - component: {fileID: 1214202313}
+  - component: {fileID: 1214202314}
   m_Layer: 5
   m_Name: Image (3)
   m_TagString: grid
@@ -2557,6 +2703,34 @@ MonoBehaviour:
   x: 0
   y: 1
   Inven: {fileID: 0}
+--- !u!114 &1214202314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214202307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 3
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1317113826
 GameObject:
   m_ObjectHideFlags: 0
@@ -2645,6 +2819,7 @@ GameObject:
   - component: {fileID: 1319012185}
   - component: {fileID: 1319012188}
   - component: {fileID: 1319012189}
+  - component: {fileID: 1319012190}
   m_Layer: 5
   m_Name: Image (6)
   m_TagString: grid
@@ -2792,6 +2967,34 @@ MonoBehaviour:
   x: 0
   y: 2
   Inven: {fileID: 0}
+--- !u!114 &1319012190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319012183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 6
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1333983889
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,6 +3535,7 @@ GameObject:
   - component: {fileID: 1945643467}
   - component: {fileID: 1945643470}
   - component: {fileID: 1945643471}
+  - component: {fileID: 1945643472}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: grid
@@ -3479,6 +3683,34 @@ MonoBehaviour:
   x: 1
   y: 0
   Inven: {fileID: 0}
+--- !u!114 &1945643472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1945643465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &1987113453
 GameObject:
   m_ObjectHideFlags: 0
@@ -4057,6 +4289,7 @@ GameObject:
   - component: {fileID: 2101899885}
   - component: {fileID: 2101899888}
   - component: {fileID: 2101899889}
+  - component: {fileID: 2101899890}
   m_Layer: 5
   m_Name: Image
   m_TagString: grid
@@ -4204,3 +4437,31 @@ MonoBehaviour:
   x: 0
   y: 0
   Inven: {fileID: 0}
+--- !u!114 &2101899890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101899883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 2
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2044247150}
+          m_MethodName: Remove_Item
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2

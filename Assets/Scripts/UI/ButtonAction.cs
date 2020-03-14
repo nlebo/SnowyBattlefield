@@ -10,10 +10,10 @@ public class ButtonAction : MonoBehaviour
     Input_Manager _Input;
     public RectTransform _Transform;
     RectTransform _ChildTrans;
-    Vector3 MousePos;
-    Vector3 Change;
-    Vector3 BasePos;
-    protected bool Down;
+    public Vector3 MousePos;
+    protected Vector3 Change;
+    public Vector3 BasePos;
+    public bool Down;
     // Start is called before the first frame update
     virtual protected void Start()
     {
