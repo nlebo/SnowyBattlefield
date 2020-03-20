@@ -6,6 +6,7 @@ public class Camera_Move : MonoBehaviour {
 
     public float MoveSpeed = 30;
 	Vector3 MousePos;
+	public Vector3 MouseWPos;
 	Vector3 BasePos;
 	bool ScrollBtn;
 	public static Camera_Move m_Camera_Move;
@@ -15,11 +16,23 @@ public class Camera_Move : MonoBehaviour {
 		ScrollBtn = false;
 		m_Camera_Move = this;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		float scroll = Input.GetAxis("Mouse ScrollWheel") * MoveSpeed;
-		
+		MouseWPos = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToViewportPoint(Input.mousePosition);
+
+        if (MouseWPos.y >= 1)
+            transform.Translate(new Vector3(0, 1, 0) * MoveSpeed * Time.deltaTime);
+
+        else if (MouseWPos.y <= 0f)
+            transform.Translate(new Vector3(0, -1, 0) * MoveSpeed * Time.deltaTime);
+
+
+        if (MouseWPos.x <= 0)
+            transform.Translate(new Vector3(-1, 0, 0) * MoveSpeed * Time.deltaTime);
+        else if (MouseWPos.x >= 1)
+            transform.Translate(new Vector3(1, 0, 0) * Time.deltaTime * MoveSpeed);
 
 		if(Input.GetMouseButtonDown(2)){
 			MousePos = UI_MANAGER.m_UI_MANAGER.UICamera.ScreenToWorldPoint(Input.mousePosition);
