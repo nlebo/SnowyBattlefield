@@ -68,6 +68,7 @@ public class Rifle_Manager : Weapon_Manager {
 					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
 					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
 					{
+						Camera_Move.m_Camera_Move.ActionZoomIn(Unit.transform.position);
 						_Unit.Hit(this);
 						Action = false;
 						
