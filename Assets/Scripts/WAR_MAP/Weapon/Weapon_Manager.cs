@@ -22,12 +22,16 @@ public class Weapon_Manager : MonoBehaviour {
 	public int Aim_Bonus, HeadShot_Bonus, Range;
 	public int Bullet, MaxBullet;
 
+	protected bool[] CameraFlag;
+
 
 	public void Awake()
 	{
 		Aim_Bonus = 0;
 		HeadShot_Bonus = 0;
 		Range = 20;
+
+		CameraFlag = new bool[5]{false,false,false,false,false};
 	}
 
 	public virtual void Select()
@@ -125,5 +129,25 @@ public class Weapon_Manager : MonoBehaviour {
 		if (rand > Total)
 			return false;
 		else return true;
+	}
+
+	public virtual void Shot(Unit_Manager _Unit)
+	{
+		StartCoroutine(_Shot(_Unit));
+	}
+
+	IEnumerator _Shot(Unit_Manager _Unit)
+	{
+		Camera_Move C = Camera_Move.m_Camera_Move;
+		C.Event = true;
+		C.ActionZoomIn(Unit.transform.position);
+		yield return new WaitForSeconds(1.3f);
+
+		C.StartCoroutine(C.CameraMove(Unit.transform.position,_Unit.transform.position,0.7f));
+		yield return new WaitForSeconds(1.3f);
+
+		C.ActionZoomOut();
+		C.Event = false;
+		yield return null;
 	}
 }

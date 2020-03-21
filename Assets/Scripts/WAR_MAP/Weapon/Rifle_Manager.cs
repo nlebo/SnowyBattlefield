@@ -24,13 +24,11 @@ public class Rifle_Manager : Weapon_Manager {
 
 		_Input = Camera.main.GetComponent<Input_Manager>();
 		_UI = GameObject.Find("Canvas").GetComponent<UI_MANAGER>();
-		
-
 	}
 
 	private void Update()
 	{
-		if (!transform.parent.CompareTag("Player")) return;
+		if (!transform.parent.CompareTag("Player") || CameraFlag[0]) return;
 
 		if (Btn1 || Btn2)
 		{
@@ -68,20 +66,8 @@ public class Rifle_Manager : Weapon_Manager {
 					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
 					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
 					{
-						Camera_Move.m_Camera_Move.ActionZoomIn(Unit.transform.position);
-						_Unit.Hit(this);
-						Action = false;
-						
-						if (Btn2) Unit.Now_Action_Point -= 3;
-						Unit.Now_Action_Point -= 3;
-
-						Btn2 = false;
-						Btn1 = false;
-
-						Bullet--;
-						_UI._Clip.text = Bullet.ToString();
-						Aim_Bonus = 0;
-						Unit.DrawActionPoint();
+						Shot(_Unit);
+						CameraFlag[0] = true;
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
 						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
 					}
@@ -200,5 +186,58 @@ public class Rifle_Manager : Weapon_Manager {
 		}
 
 		return true;
+	}
+
+    public override void Shot(Unit_Manager _Unit)
+    {
+        StartCoroutine(_Shot(_Unit));
+    }
+
+    IEnumerator _Shot(Unit_Manager _Unit)
+	{
+		Camera_Move C = Camera_Move.m_Camera_Move;
+
+		Cursor.lockState = CursorLockMode.Locked;
+		C.Event = true;
+		C.ActionZoomIn(Unit.transform.position);
+		yield return new WaitForSeconds(1.3f);
+
+        C.StartCoroutine(C.CameraMove(Unit.transform.position, _Unit.transform.position, 0.7f));
+        yield return new WaitForSeconds(1.3f);
+
+        if(_Unit.Hit(this))
+		{
+			yield return null;
+			if(_Unit == null)
+			{
+				yield return new WaitForSeconds(2.5f);
+			}
+			else
+				yield return new WaitForSeconds(1.5f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(1.5f);
+		}
+        Action = false;
+
+        if (Btn2) Unit.Now_Action_Point -= 3;
+        Unit.Now_Action_Point -= 3;
+
+        Btn2 = false;
+        Btn1 = false;
+
+        Bullet--;
+        _UI._Clip.text = Bullet.ToString();
+        Aim_Bonus = 0;
+        Unit.DrawActionPoint();
+		
+		C.ActionZoomOut();
+		yield return new WaitForSeconds(0.2f);
+
+		Cursor.lockState = CursorLockMode.None;
+		CameraFlag[0] = false;
+		C.Event = false;
+		yield return null;
 	}
 }

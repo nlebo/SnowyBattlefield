@@ -62,15 +62,19 @@ public class Camera_Move : MonoBehaviour {
         }
 	}
 
+	public void ShotAction(Vector3 PPos,Vector3 EPos)
+	{
+		StartCoroutine(ShotCameraMove(PPos,EPos));
+	}
+
 	public void ActionZoomIn(Vector3 Pos)
 	{
-		Event = true;
+		//Event = true;
 		Pos.z = -10;
 		transform.position = Pos;
 		StartCoroutine(ZoomIn(2,0.2f));
 
 	}
-
 	public void ActionZoomOut()
 	{
 		StartCoroutine(ZoomOut(BaseSize,0.2f));
@@ -86,9 +90,7 @@ public class Camera_Move : MonoBehaviour {
 			Camera.main.orthographicSize = Mathf.Lerp(BaseSize,Z,dT/t);
 			yield return null;
 		}
-
-		Event = false;
-		ActionZoomOut();
+		Camera.main.orthographicSize = Z;
 		yield return null;
 	}
 
@@ -104,6 +106,36 @@ public class Camera_Move : MonoBehaviour {
 			yield return null;
 		}
 
+		Camera.main.orthographicSize = Z;
+		//Event = false;
+		yield return null;
+	}
+
+	public IEnumerator CameraMove(Vector3 A, Vector3 B,float t)
+	{
+		A.z = transform.position.z;
+		B.z = transform.position.z;
+		float DT = 0;
+		while(DT < t)
+		{
+			DT += Time.deltaTime;
+			transform.position = new Vector3(Mathf.Lerp(A.x,B.x,DT/t),Mathf.Lerp(A.y,B.y,DT/t),transform.position.z);
+			yield return null;
+		}
+		
+		transform.position = B;
+		yield return null;
+	}
+	IEnumerator ShotCameraMove(Vector3 PPos,Vector3 EPos)
+	{
+		Event = true;
+		ActionZoomIn(PPos);
+		yield return new WaitForSeconds(1.3f);
+
+		StartCoroutine(CameraMove(PPos,EPos,0.7f));
+		yield return new WaitForSeconds(1.3f);
+
+		ActionZoomOut();
 		Event = false;
 		yield return null;
 	}
