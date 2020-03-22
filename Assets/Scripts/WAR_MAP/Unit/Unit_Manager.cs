@@ -432,6 +432,8 @@ public class Unit_Manager : MonoBehaviour {
 			Total = _Weapon.Unit.GetMeetPlayer().Contains(this) ? Total - (dis * 5) : Total - (dis * 5) - 30;
 
 		#endregion
+
+		if(Total< 0) Total = 0;
 		return (int)Total;
 	}
 

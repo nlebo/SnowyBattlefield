@@ -72,7 +72,7 @@ public class Camera_Move : MonoBehaviour {
 		//Event = true;
 		Pos.z = -10;
 		transform.position = Pos;
-		StartCoroutine(ZoomIn(2,0.2f));
+		StartCoroutine(ZoomIn(4,0.2f));
 
 	}
 	public void ActionZoomOut()
