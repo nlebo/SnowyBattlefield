@@ -63,8 +63,7 @@ public class EUAR_Manager : Weapon_Manager {
 				if (hit.transform != null && hit.transform.tag == "Enemy")
 				{
 					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
-					{
+
 						if (Btn1)
 						{
 							_Unit.Hit(this);
@@ -94,7 +93,7 @@ public class EUAR_Manager : Weapon_Manager {
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
 						Unit.DrawActionPoint();
 						 if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
-					}
+					
 				}
 			}
 
@@ -229,8 +228,6 @@ public class EUAR_Manager : Weapon_Manager {
 
 		if (Btn1 || Btn2 || Btn3)
 		{
-			if (Mathf.Abs(_Unit.x - Unit.x) - Mathf.Abs(_Unit.y - Unit.y) <= Range)
-			{
 				if (Btn1)
 				{
 					_Unit.Hit(this);
@@ -258,11 +255,6 @@ public class EUAR_Manager : Weapon_Manager {
 				Btn1 = false;
 				Btn3 = false;
 
-			}
-			else
-			{
-				Unit.Now_Action_Point = 0;
-			}
 
 		}
 		return true;

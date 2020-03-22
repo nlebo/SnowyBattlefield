@@ -64,13 +64,12 @@ public class Rifle_Manager : Weapon_Manager {
 				if (hit.transform != null && hit.transform.tag == "Enemy")
 				{
 					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
-					{
+
 						Shot(_Unit);
 						CameraFlag[0] = true;
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
 						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
-					}
+					
 				}
 			}
 
@@ -164,8 +163,6 @@ public class Rifle_Manager : Weapon_Manager {
 
 		if (Btn1 || Btn2)
 		{
-			if (Mathf.Abs(_Unit.x - Unit.x) - Mathf.Abs(_Unit.y - Unit.y) <= Range)
-			{
 				_Unit.Hit(this);
 				Action = false;
 
@@ -177,11 +174,6 @@ public class Rifle_Manager : Weapon_Manager {
 
 				Bullet--;
 				Aim_Bonus = 0;
-			}
-			else
-			{
-				Unit.Now_Action_Point = 0;
-			}
 
 		}
 

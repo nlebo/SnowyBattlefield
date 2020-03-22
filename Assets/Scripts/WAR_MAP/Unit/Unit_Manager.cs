@@ -39,6 +39,7 @@ public class Unit_Manager : MonoBehaviour {
 	public int							x, y;
 	public int							Char_Num;
 	public int							Painkiller_Count = 0;
+	public float						CoverPercent = 0;
 	
 	#region Stat
 	public float						aim = 40;  //전투시 명중률 % , 이벤트시 x * 3/2 (내림) 
@@ -81,7 +82,7 @@ public class Unit_Manager : MonoBehaviour {
 		DynamicVisualAcuity = Random.Range(13, 20);
 		Now_Action_Point = Pull_Action_Point;
 		Now_Move_Point = Move_Point;
-
+		CoverBonus = Random.Range(0,2);
 		UI_Manager = GameObject.Find("Canvas").GetComponent<UI_MANAGER>();
 		Inventory = GameObject.Find("Inventory").GetComponent<Inventory_Manager>();
 		T = transform.parent.GetComponent<Tile>();
@@ -357,7 +358,7 @@ public class Unit_Manager : MonoBehaviour {
 		int E_Pressure_Bonus = _Weapon.Unit.pressure - ((_Weapon.Unit.pressure / 100) * (_Weapon.Unit.will / 2));
 		Total -= (DynamicVisualAcuity + PostureBonus);
 		int I_Y = 0, I_X = 0;
-
+		CoverBonus = 0;
 		#region CoverBonus
 		if (Mathf.Abs(x - _Weapon.Unit.x) > Mathf.Abs(y - _Weapon.Unit.y))
 		{
@@ -376,24 +377,26 @@ public class Unit_Manager : MonoBehaviour {
 
 		if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Full)
 		{
-			CoverBonus = 50;
+			//50
+			CoverBonus = transform.tag == "Player" ? 50 : CoverPercent == 1 ? (int)(50 * 0.4f) : (int)(50 * 0.6f);
+			
 			Total -= (CoverBonus - PostureBonus);
 		}
 		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Half && (_Posture == Posture.Crouching || _Posture == Posture.Prone))
 		{
-			CoverBonus = 30;
+			CoverBonus = transform.tag == "Player" ? 30 : CoverPercent == 1 ? (int)(30 * 0.4f) : (int)(30 * 0.6f);
 			Total -= (CoverBonus - PostureBonus);
 		}
 		else if (_Tile.MY_Tile[x + I_X][y + I_Y].View == Tile.View_Kind.Low && _Posture == Posture.Prone)
 		{
-			CoverBonus = 70;
+			CoverBonus = transform.tag == "Player" ? 70 : CoverPercent == 1 ? (int)(70 * 0.4f) : (int)(70 * 0.6f);
 			Total -= (CoverBonus - PostureBonus);
 		}
 
 		//enemy
-		if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Half && _Weapon.Unit._Posture == Posture.Crouching)
+		if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Half && _Weapon.Unit._Posture == Posture.Crouching || _Weapon.Unit._Posture == Posture.Prone)
 		{
-			Total += (10 - _Weapon.Unit.PostureBonus);
+			Total = transform.tag == "Player" ? Total + (10 - _Weapon.Unit.PostureBonus) : CoverPercent == 1 ? Total + ((int)(10  * 0.4f)- _Weapon.Unit.PostureBonus) : Total + ((int)(10  * 0.6f)- _Weapon.Unit.PostureBonus);
 		}
 		else if (_Tile.MY_Tile[_Weapon.Unit.x - I_X][_Weapon.Unit.y - I_Y].View == Tile.View_Kind.Full)
 		{
@@ -412,10 +415,25 @@ public class Unit_Manager : MonoBehaviour {
 		#endregion
 
 		#region Condition Bonus
-
 		if(_Weapon.Unit.Overpowered) Total -= 20;
+
+        #endregion
+
+        #region RangeBonus
+		int dis = 0;
+        if(Mathf.Abs(_Weapon.Unit.x - x) > 8 || Mathf.Abs(_Weapon.Unit.y - y) > 8)
+			dis = Mathf.Abs(_Weapon.Unit.x - x) > 8 ? Mathf.Abs(_Weapon.Unit.x - x) - 8 : Mathf.Abs(_Weapon.Unit.y - y) - 8;
+		
+		dis = dis > 4 ? 4 : dis;
+
+		if(_Weapon.Unit.tag == "Player")
+			Total = T.View_Char.Contains(_Weapon.Unit.Char_Num) ? Total - (dis * 5) : Total - (dis * 5) - 30;
+		else
+			Total = _Weapon.Unit.GetMeetPlayer().Contains(this) ? Total - (dis * 5) : Total - (dis * 5) - 30;
 
 		#endregion
 		return (int)Total;
 	}
+
+	public virtual List<Unit_Manager> GetMeetPlayer(){return null;}
 }

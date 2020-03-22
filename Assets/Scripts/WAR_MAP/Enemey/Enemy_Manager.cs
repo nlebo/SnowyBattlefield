@@ -362,7 +362,7 @@ public class Enemy_Manager : Unit_Manager
     {
         return A_T;
     }
-    public List<Unit_Manager> GetMeetPlayer()
+    public override List<Unit_Manager> GetMeetPlayer()
     {
         return PLAYER;
     }

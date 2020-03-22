@@ -60,47 +60,46 @@ public class Pistol_Manager : Weapon_Manager {
 				Vector2 pos = _Input.pos;
 				RaycastHit2D hit = _Input.hit_Player;
 
-				if (hit.transform != null && hit.transform.tag == "Enemy")
-				{
-					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
-					{
-						if (Btn1)
-						{
-							_Unit.Hit(this);
-							Bullet--;
-							Unit.Now_Action_Point -= 3;
-						}
-						else if (Btn2)
-						{
-							_Unit.Hit(this);
-							Bullet--;
-							Unit.Now_Action_Point -= 5;
-						}
-						else
-						{
-							_Unit.Hit(this);
-							Bullet--;
-							Unit.Now_Action_Point -= 6;
-						}
+                if (hit.transform != null && hit.transform.tag == "Enemy")
+                {
+                    Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
 
-						_UI._Clip.text = Bullet.ToString();
+                    if (Btn1)
+                    {
+                        _Unit.Hit(this);
+                        Bullet--;
+                        Unit.Now_Action_Point -= 3;
+                    }
+                    else if (Btn2)
+                    {
+                        _Unit.Hit(this);
+                        Bullet--;
+                        Unit.Now_Action_Point -= 5;
+                    }
+                    else
+                    {
+                        _Unit.Hit(this);
+                        Bullet--;
+                        Unit.Now_Action_Point -= 6;
+                    }
 
-						Action = false;
-						Btn1 = false;
-						Btn2 = false;
-						Btn3 = false;
-						Aim_Bonus = 0;
-						HeadShot_Bonus = 0;
+                    _UI._Clip.text = Bullet.ToString();
 
-						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
-						Unit.DrawActionPoint();
-						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
-					}
-				}
-			}
+                    Action = false;
+                    Btn1 = false;
+                    Btn2 = false;
+                    Btn3 = false;
+                    Aim_Bonus = 0;
+                    HeadShot_Bonus = 0;
 
-		}
+                    Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
+                    Unit.DrawActionPoint();
+                    if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
+
+                }
+            }
+
+        }
 	}
 
 	public override void Select()

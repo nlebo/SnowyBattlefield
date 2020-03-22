@@ -53,37 +53,35 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
             {
                 if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
             }
-		}
-		if (Input.GetMouseButtonDown(0))
-		{
-			if (Btn3 || Btn4)
-			{
-				Vector2 pos = _Input.pos;
-				RaycastHit2D hit = _Input.hit_Player;
+        }
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (Btn3 || Btn4)
+            {
+                Vector2 pos = _Input.pos;
+                RaycastHit2D hit = _Input.hit_Player;
 
-				if (hit.transform != null && hit.transform.tag == "Enemy")
-				{
-					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-					Debug.Log(_Unit);
-					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
-					{
-						if (Btn3)
-						{
-							StartCoroutine(_BTN3(_Unit));
-							Unit.Now_Action_Point -= 4;
-						}
-						else
-						{
-							StartCoroutine(_BTN4(_Unit, Bullet));
-							Unit.Now_Action_Point -= 3;
-						}
+                if (hit.transform != null && hit.transform.tag == "Enemy")
+                {
+                    Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
+                    Debug.Log(_Unit);
+                    if (Btn3)
+                    {
+                        StartCoroutine(_BTN3(_Unit));
+                        Unit.Now_Action_Point -= 4;
+                    }
+                    else
+                    {
+                        StartCoroutine(_BTN4(_Unit, Bullet));
+                        Unit.Now_Action_Point -= 3;
+                    }
 
-						Unit.DrawActionPoint();
-						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
-						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
-					}
-				}
-			}
+                    Unit.DrawActionPoint();
+                    Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
+                    if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
+
+                }
+            }
 
 		}
 	}

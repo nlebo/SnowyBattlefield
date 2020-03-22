@@ -64,8 +64,6 @@ public class SUAR_MANAGER : Weapon_Manager {
 				if (hit.transform != null && hit.transform.tag == "Enemy")
 				{
 					Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-					if (Mathf.Abs(_Unit.x - Unit.x) + Mathf.Abs(_Unit.y - Unit.y) <= Range)
-					{
 						if (Btn1)
 						{
 							StartCoroutine(_BTN1(_Unit,Bullet));
@@ -85,7 +83,7 @@ public class SUAR_MANAGER : Weapon_Manager {
 						Unit.DrawActionPoint();
 						Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[1]);
 						if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
-					}
+					
 
 				}
 			}
@@ -256,43 +254,35 @@ public class SUAR_MANAGER : Weapon_Manager {
 			}
 		}
 		else if (Bullet > 0 && Unit.Now_Action_Point >= 3)
-		{
-			BTN1();
-		}
-		else if (Unit.Now_Action_Point >= 3)
-			BTN4();
-		else return false;
+        {
+            BTN1();
+        }
+        else if (Unit.Now_Action_Point >= 3)
+            BTN4();
+        else return false;
 
-		if (Btn1 || Btn2 || Btn3)
-		{
+        if (Btn1 || Btn2 || Btn3)
+        {
 
 
-			if (Mathf.Abs(_Unit.x - Unit.x) - Mathf.Abs(_Unit.y - Unit.y) <= Range)
-			{
-				if (Btn1)
-				{
-					StartCoroutine(_BTN1(_Unit, Bullet));
-				}
-				else if (Btn2)
-				{
-					StartCoroutine(_BTN2(_Unit));
-				}
-				else
-				{
-					StartCoroutine(_BTN3(_Unit, Bullet));
-				}
+            if (Btn1)
+            {
+                StartCoroutine(_BTN1(_Unit, Bullet));
+            }
+            else if (Btn2)
+            {
+                StartCoroutine(_BTN2(_Unit));
+            }
+            else
+            {
+                StartCoroutine(_BTN3(_Unit, Bullet));
+            }
 
-				if (Btn2 || Btn3) Unit.Now_Action_Point -= 3;
-				Unit.Now_Action_Point -= 3;
+            if (Btn2 || Btn3) Unit.Now_Action_Point -= 3;
+            Unit.Now_Action_Point -= 3;
 
-			}
-			else
-			{
-				Unit.Now_Action_Point = 0;
-			}
+        }
 
-		}
-
-		return true;
-	}
+        return true;
+    }
 }
