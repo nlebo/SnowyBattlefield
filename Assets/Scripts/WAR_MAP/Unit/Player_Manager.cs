@@ -27,6 +27,10 @@ public class Player_Manager : Unit_Manager {
     bool                    selected = false;
     bool                    CanMove = false;
     bool                    Second = false;
+    bool                    memento = false;
+    bool                    CatchFalg = false;
+    bool                    Catching = false;
+    bool                    WakeUpFlag = false;
     public bool             MeetEnemy = false;
 
     private float           enter;
@@ -53,14 +57,16 @@ public class Player_Manager : Unit_Manager {
 		original = GetComponent<SpriteRenderer>().color;
         ChangeMental_Bar();
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (Now_Move) return;
 
         Vector2 pos = _Input.pos;
         RaycastHit2D hit = _Input.hit;
 
+        #region  Dig
         if (DigHasty)
         {
             Dig(hit, DT);
@@ -112,19 +118,59 @@ public class Player_Manager : Unit_Manager {
                 }
             }
         }
+        #endregion
+
+        #region  Actions
+
+        if(WakeUpFlag || CatchFalg)
+        {
+            if (Input_Manager.Highlighted != null)
+            {
+                Input_Manager.Highlighted();
+                Input_Manager.Highlighted = null;
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                WakeUpFlag = false;
+                CatchFalg = false;
+            }
+            else if (hit.transform != null && hit.transform.tag == "Tile")
+            {
+                Tile _T = hit.transform.GetComponent<Tile>();
+
+                if (Mathf.Abs(_T.X - T.X) + Mathf.Abs(_T.Y - T.Y) == 1)
+                {
+                    _T.HighLight(1);
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Input_Manager.Highlighted();
+                        Input_Manager.Highlighted = null;
+
+                        if (T.transform.Find("Player(Clone)") != null)
+                        {
+                            
+                        }
+                        WakeUpFlag = false;
+                        CatchFalg = false;
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         #region A_Star(For Move)
 
         if (T.StartPoint && Input.GetMouseButtonDown(0))
         {
-           
+
             if (hit.transform != null && hit.transform.tag == "Tile")
             {
 
                 Tile _T = hit.transform.GetComponent<Tile>();
                 if (!_T.Check) { }
 
-                else if(_Tile.TileMap[_T.X][_T.Y] != Tile_Manager.Cover_Kind.HalfCover && _Tile.TileMap[_T.X][_T.Y] != Tile_Manager.Cover_Kind.Debris)
+                else if (_Tile.TileMap[_T.X][_T.Y] != Tile_Manager.Cover_Kind.HalfCover && _Tile.TileMap[_T.X][_T.Y] != Tile_Manager.Cover_Kind.Debris)
                 {
                     if (_T.transform.childCount > 0)
                     {
@@ -142,7 +188,7 @@ public class Player_Manager : Unit_Manager {
                             A_T[i].UnHighLight();
                         }
 
-                        if (A_T.Count >= 1 && A_T[A_T.Count-1].X == _T.X && A_T[A_T.Count-1].Y == _T.Y)
+                        if (A_T.Count >= 1 && A_T[A_T.Count - 1].X == _T.X && A_T[A_T.Count - 1].Y == _T.Y)
                         {
                             UI_Manager.Delete_AP_Bar.fillAmount = 0;
                             StartCoroutine(Move());
@@ -150,14 +196,14 @@ public class Player_Manager : Unit_Manager {
 
                             return;
                         }
-                        
-                        
+
+
                         A_T.Clear();
                         A_T = null;
                     }
 
                     A_T = new List<Tile>();
-                    A_Star(_T.X, _T.Y, _T.X, _T.Y, 0,0);
+                    A_Star(_T.X, _T.Y, _T.X, _T.Y, 0, 0);
                     UI_Manager.Delete_AP_Bar.fillAmount = cost / (float)Now_Action_Point;
                     comple = false;
                     where = 100;
@@ -169,43 +215,12 @@ public class Player_Manager : Unit_Manager {
         }
 
         #endregion
+    
+        
     }
 
-    public void Check_Move()
-    {
-        int Action = Now_Action_Point;
-        T.StartPoint = true;
-        CanMove = true;
 
-        if (T.Action != null && T.Check)
-            if (!Now_Move) Tile._ReturnOriginal();
-
-        T.Action = this;
-        T.Check = true;
-
-		if (x - 1 >= 0)
-		{
-			_Tile.MY_Tile[x - 1][y].Action = this;
-			_Tile.MY_Tile[x - 1][y].CanMove(Action,new int[] { x, y });
-		}
-
-		if (x + 1 < _Tile.X)
-		{
-			_Tile.MY_Tile[x + 1][y].Action = this;
-			_Tile.MY_Tile[x + 1][y].CanMove(Action, new int[] { x, y });
-		}
-		if (y - 1 >= 0)
-		{
-			_Tile.MY_Tile[x][y - 1].Action = this;
-			_Tile.MY_Tile[x][y - 1].CanMove(Action, new int[] { x, y });
-		}
-		if (y + 1 < _Tile.Y)
-		{
-			_Tile.MY_Tile[x][y + 1].Action = this;
-			_Tile.MY_Tile[x][y + 1].CanMove(Action, new int[] { x, y });
-		}
-
-    }
+    #region  Move functions
     public void A_Star(int _x, int _y, int px, int py, int count, int deep)
     {
         int r = 10000;
@@ -297,7 +312,7 @@ public class Player_Manager : Unit_Manager {
                 if (r > pr[3])
                 {
                     r = pr[3];
-                    rr = Mathf.Abs(x - _x ) + Mathf.Abs(y - (_y + 1));
+                    rr = Mathf.Abs(x - _x) + Mathf.Abs(y - (_y + 1));
                 }
             }
         }
@@ -414,65 +429,196 @@ public class Player_Manager : Unit_Manager {
             _Tile.MY_Tile[_x][_y].HighLight();
         }
     }
-    public void Dig(RaycastHit2D hit, Tile T1 = null)
+
+    public void Check_Move()
     {
-        if (T1 == null) T1 = T;
-        if (Input_Manager.Highlighted != null)
+        int Action = Now_Action_Point;
+        T.StartPoint = true;
+        CanMove = true;
+
+        if (T.Action != null && T.Check)
+            if (!Now_Move) Tile._ReturnOriginal();
+
+        T.Action = this;
+        T.Check = true;
+
+        if (x - 1 >= 0)
         {
-            Input_Manager.Highlighted();
-            Input_Manager.Highlighted = null;
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            DigHasty = false;
-            DT = T;
+            _Tile.MY_Tile[x - 1][y].Action = this;
+            _Tile.MY_Tile[x - 1][y].CanMove(Action, new int[] { x, y });
         }
 
-        else if (hit.transform != null && hit.transform.tag == "Tile")
+        if (x + 1 < _Tile.X)
         {
-            Tile _T = hit.transform.GetComponent<Tile>();
+            _Tile.MY_Tile[x + 1][y].Action = this;
+            _Tile.MY_Tile[x + 1][y].CanMove(Action, new int[] { x, y });
+        }
+        if (y - 1 >= 0)
+        {
+            _Tile.MY_Tile[x][y - 1].Action = this;
+            _Tile.MY_Tile[x][y - 1].CanMove(Action, new int[] { x, y });
+        }
+        if (y + 1 < _Tile.Y)
+        {
+            _Tile.MY_Tile[x][y + 1].Action = this;
+            _Tile.MY_Tile[x][y + 1].CanMove(Action, new int[] { x, y });
+        }
 
-            if (Mathf.Abs(_T.X - T1.X) + Mathf.Abs(_T.Y - T1.Y) == 1)
+    }
+
+    public IEnumerator Move()
+    {
+        float _Time = 0;
+
+
+        for (int i = 0; i < A_T.Count; i++)
+        {
+
+            Vector2 PPos = Vector2.zero;
+            Tile PT = null;
+
+            if (Partner != null)
             {
-                _T.HighLight(1);
-                if (Input.GetMouseButtonDown(0))
-                {
-                    Input_Manager.Highlighted();
-                    Input_Manager.Highlighted = null;
+                Partner.transform.SetParent(transform.parent);
+                PPos = Partner.transform.localPosition;
+                PT = Partner.transform.parent.GetComponent<Tile>();
+                Partner.Now_Move = true;
+            }
 
-                    if (_T.X > x)
-                    {
-                        T1.direct = Tile.Direct.Right;
-                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[3], T1.transform);
-                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
-                    }
-                    else if (_T.X < x)
-                    {
-                        T1.direct = Tile.Direct.Left;
-                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[4], T1.transform);
-                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
-                    }
-                    else if (_T.Y > y)
-                    {
-                        T1.direct = Tile.Direct.Up;
-                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[5], T1.transform);
-                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
-                    }
-                    else if (_T.Y < y)
-                    {
-                        T1.direct = Tile.Direct.Down;
-                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[6], T1.transform);
-                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
-                    }
-                    T1.View = Tile.View_Kind.Low;
-                    Now_Action_Point -= 7;
-                    DigHasty = false;
-                    DT = T;
-                }
+            transform.SetParent(A_T[i].transform);
+            Vector2 Pos = transform.localPosition;
+
+
+            Now_Action_Point -= Now_Move_Point;
+
+            if (_Tile.TileMap[A_T[i].X][A_T[i].Y] == Tile_Manager.Cover_Kind.HalfCover)
+                Now_Action_Point--;
+
+            if (x > A_T[i].X) dir = Direction.left;
+            else if (x < A_T[i].X) dir = Direction.right;
+            else if (y > A_T[i].Y) dir = Direction.down;
+            else if (y < A_T[i].Y) dir = Direction.up;
+
+            while (_Time < 0.1f)
+            {
+                transform.localPosition = new Vector2(Mathf.Lerp(Pos.x, 0, 10 * _Time), Mathf.Lerp(Pos.y, 0, 10 * _Time));
+                if (Partner != null)
+                    Partner.transform.localPosition = new Vector2(Mathf.Lerp(PPos.x, 0, 10 * _Time), Mathf.Lerp(PPos.y, 0, 10 * _Time));
+                DrawActionPoint();
+                yield return null;
+                _Time += Time.deltaTime;
+            }
+            transform.localPosition = new Vector2(0, 0);
+            if (Partner != null)
+                Partner.transform.localPosition = new Vector2(0, 0);
+            _Time = 0;
+
+            //View.UnView(x - A_T[i].X, y - A_T[i].Y);
+
+            x = A_T[i].X;
+            y = A_T[i].Y;
+
+            if (Partner != null)
+            {
+                Partner.x = PT.X;
+                Partner.y = PT.Y;
+                Partner.View.x = Partner.x;
+                Partner.View.y = Partner.y;
+                Partner.T = PT;
+                Partner.dir = dir;
+                Partner.Tile_InSighted(Partner);
+
+                //Partner.Tile_InSighted = null;
+                //Partner.Tile_InSighted = Partner.Tile_InSighted2;
+                //Partner.Tile_InSighted2 = null;
+
+                Partner.View.TestInView();
+            }
+
+            View.x = x;
+            View.y = y;
+            T = A_T[i];
+
+            if (Tile_InSighted != null)
+                Tile_InSighted(this);
+            //Tile_InSighted = null;
+            //Tile_InSighted = Tile_InSighted2;
+            //Tile_InSighted2 = null;
+
+            View.TestInView();
+            if (MeetEnemy)
+            {
+                MeetEnemy = false;
+                break;
             }
         }
+
+        A_T.Clear();
+        A_T = null;
+        Now_Move = false;
+        Tile._ReturnOriginal();
+
+        if (Partner != null)
+        {
+            Partner.Now_Action_Point = Now_Action_Point;
+            Partner.Now_Move = false;
+            if (_Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.Default)
+            {
+                Vector2 PPos;
+                Tile PT;
+                if (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x - 1][y].transform);
+                    Fire_Dir = Direction.up;
+                }
+                else if (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x + 1][y].transform);
+                    Fire_Dir = Direction.down;
+                }
+                else if (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x][y - 1].transform);
+                    Fire_Dir = Direction.left;
+                }
+                else if (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x][y + 1].transform);
+                    Fire_Dir = Direction.right;
+                }
+
+                PPos = Partner.transform.localPosition;
+                PT = Partner.transform.parent.GetComponent<Tile>();
+                Partner.Now_Move = true;
+
+                while (_Time < 0.5f)
+                {
+                    Partner.transform.localPosition = new Vector2(Mathf.Lerp(PPos.x, 0, 4 * _Time), Mathf.Lerp(PPos.y, 0, 4 * _Time));
+                    yield return null;
+                    _Time += Time.deltaTime;
+                }
+
+                Partner.x = PT.X;
+                Partner.y = PT.Y;
+                Partner.View.x = Partner.x;
+                Partner.View.y = Partner.y;
+                Partner.T = PT;
+                Partner.Tile_InSighted(Partner);
+                //Partner.Tile_InSighted = null;
+                //Partner.Tile_InSighted = Partner.Tile_InSighted2;
+                //Partner.Tile_InSighted2 = null;
+                Partner.Now_Move = false;
+
+                Partner.View.TestInView();
+            }
+
+        }
+        yield return null;
     }
+    #endregion
+
     
+    #region  Turn functions
     public void InitializeButton()
     {
 		#region UIOFF
@@ -558,63 +704,7 @@ public class Player_Manager : Unit_Manager {
         Expanding = false;
         UI_Manager.Delete_AP_Bar.fillAmount = 0;
 	}
-	public void EndTurn()
-    {
-        UnSelect();
-        Now_Action_Point = Pull_Action_Point;
-    }
-
-    public bool Change_Posture(Player_Manager.Posture CPosture)
-    {
-        if (_Posture == CPosture || Now_Action_Point <= 0) return false;
-        switch (CPosture)
-        {
-            case Posture.Crouching:
-                Now_Action_Point--;
-                _Posture = CPosture;
-                Now_Move_Point = Move_Point;
-                UI_Manager.Posture.text = "Crouching";
-                GetComponent<SpriteRenderer>().sprite = _Pos[1];
-                View.ViewRange = 12;
-				PostureBonus = 5;
-                break;
-            case Posture.Prone:
-                Now_Action_Point--;
-                _Posture = CPosture;
-                Now_Move_Point = Move_Point;
-                UI_Manager.Posture.text = "Proneing";
-                GetComponent<SpriteRenderer>().sprite = _Pos[2];
-                View.ViewRange = 12;
-				PostureBonus = 10;
-                break;
-            case Posture.Standing:
-                Now_Action_Point--;
-                _Posture = CPosture;
-                Now_Move_Point = Move_Point;
-                UI_Manager.Posture.text = "Standing";
-                GetComponent<SpriteRenderer>().sprite = _Pos[0];
-                View.ViewRange = 12;
-				PostureBonus = 0;
-                break;
-
-        }
-        UI_Manager.PosImageChange(_Posture);
-        Tile_InSighted(this);
-
-        View.TestInView();
-
-        UI_Manager.Standing_Button.gameObject.SetActive(false);
-        UI_Manager.Crouching_Button.gameObject.SetActive(false);
-        UI_Manager.Proneing_Button.gameObject.SetActive(false);
-        DrawActionPoint();
-        return true;
-    }
-
-	public override void DrawActionPoint()
-	{
-		D_Action_Point.text = Now_Action_Point.ToString();
-	}
-    public override void TurnOn()
+	public override void TurnOn()
     {
         Board_Manager.m_Board_Manager.TurnFlag = 0;
         base.TurnOn();
@@ -629,25 +719,10 @@ public class Player_Manager : Unit_Manager {
             Select();
         
     }
-    public override void Death()
+    public void EndTurn()
     {
-        for (int i = 0; i < Tactical_Head.GetPlayerCount(); i++)
-        {
-            Unit_Manager Team = Tactical_Head.GetPlayer(i);
-            if (Mathf.Abs(x - Team.x) <= 1 && Mathf.Abs(y - Team.y) <= 1)
-                Team.pressure += 30;
-
-                Team.ChangeMental_Bar();
-
-        }
-
-        for (int i = 0; i < Tactical_Head.GetEnemyCount(); i++)
-        {
-            Unit_Manager Enemy = Tactical_Head.GetEnemy(i);
-            if (Mathf.Abs(x - Enemy.x) <= 3 && Mathf.Abs(y - Enemy.y) <= 3)
-                Enemy.pressure -= 10;
-        }
-        base.Death();
+        UnSelect();
+        Now_Action_Point = Pull_Action_Point;
     }
     public override void Select()
     {
@@ -947,6 +1022,13 @@ public class Player_Manager : Unit_Manager {
 		if (!Now_Move) Tile._ReturnOriginal();
     }
     
+    #endregion
+
+    
+	public override void DrawActionPoint()
+	{
+		D_Action_Point.text = Now_Action_Point.ToString();
+	}
     public override bool Hit(Weapon_Manager _Weapon)
     {
         bool result = base.Hit(_Weapon);
@@ -965,160 +1047,182 @@ public class Player_Manager : Unit_Manager {
         ChangeMental_Bar();
         return result;
     }
+    public override void Death()
+    {
+        for (int i = 0; i < Tactical_Head.GetPlayerCount(); i++)
+        {
+            Unit_Manager Team = Tactical_Head.GetPlayer(i);
+            if (Mathf.Abs(x - Team.x) <= 1 && Mathf.Abs(y - Team.y) <= 1)
+                Team.pressure += 30;
 
+                Team.ChangeMental_Bar();
+
+        }
+
+        for (int i = 0; i < Tactical_Head.GetEnemyCount(); i++)
+        {
+            Unit_Manager Enemy = Tactical_Head.GetEnemy(i);
+            if (Mathf.Abs(x - Enemy.x) <= 3 && Mathf.Abs(y - Enemy.y) <= 3)
+                Enemy.pressure -= 10;
+        }
+        base.Death();
+    }
+
+
+    #region  Action functions
+    public bool Change_Posture(Player_Manager.Posture CPosture)
+    {
+        if (_Posture == CPosture || Now_Action_Point <= 0) return false;
+        switch (CPosture)
+        {
+            case Posture.Crouching:
+                Now_Action_Point--;
+                _Posture = CPosture;
+                Now_Move_Point = Move_Point;
+                UI_Manager.Posture.text = "Crouching";
+                GetComponent<SpriteRenderer>().sprite = _Pos[1];
+                View.ViewRange = 12;
+				PostureBonus = 5;
+                break;
+            case Posture.Prone:
+                Now_Action_Point--;
+                _Posture = CPosture;
+                Now_Move_Point = Move_Point;
+                UI_Manager.Posture.text = "Proneing";
+                GetComponent<SpriteRenderer>().sprite = _Pos[2];
+                View.ViewRange = 12;
+				PostureBonus = 10;
+                break;
+            case Posture.Standing:
+                Now_Action_Point--;
+                _Posture = CPosture;
+                Now_Move_Point = Move_Point;
+                UI_Manager.Posture.text = "Standing";
+                GetComponent<SpriteRenderer>().sprite = _Pos[0];
+                View.ViewRange = 12;
+				PostureBonus = 0;
+                break;
+
+        }
+        UI_Manager.PosImageChange(_Posture);
+        Tile_InSighted(this);
+
+        View.TestInView();
+
+        UI_Manager.Standing_Button.gameObject.SetActive(false);
+        UI_Manager.Crouching_Button.gameObject.SetActive(false);
+        UI_Manager.Proneing_Button.gameObject.SetActive(false);
+        DrawActionPoint();
+        return true;
+    }
+    public void Dig(RaycastHit2D hit, Tile T1 = null)
+    {
+        if (T1 == null) T1 = T;
+        if (Input_Manager.Highlighted != null)
+        {
+            Input_Manager.Highlighted();
+            Input_Manager.Highlighted = null;
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            DigHasty = false;
+            DT = T;
+        }
+
+        else if (hit.transform != null && hit.transform.tag == "Tile")
+        {
+            Tile _T = hit.transform.GetComponent<Tile>();
+
+            if (Mathf.Abs(_T.X - T1.X) + Mathf.Abs(_T.Y - T1.Y) == 1)
+            {
+                _T.HighLight(1);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Input_Manager.Highlighted();
+                    Input_Manager.Highlighted = null;
+
+                    if (_T.X > x)
+                    {
+                        T1.direct = Tile.Direct.Right;
+                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[3], T1.transform);
+                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
+                    }
+                    else if (_T.X < x)
+                    {
+                        T1.direct = Tile.Direct.Left;
+                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[4], T1.transform);
+                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
+                    }
+                    else if (_T.Y > y)
+                    {
+                        T1.direct = Tile.Direct.Up;
+                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[5], T1.transform);
+                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
+                    }
+                    else if (_T.Y < y)
+                    {
+                        T1.direct = Tile.Direct.Down;
+                        T1._Obstacle = Instantiate(T1.Obstacle_Manager.Obstacles[6], T1.transform);
+                        T1.Kind = Tile_Manager.Cover_Kind.Skimisher;
+                    }
+                    T1.View = Tile.View_Kind.Low;
+                    Now_Action_Point -= 7;
+                    DigHasty = false;
+                    DT = T;
+                }
+            }
+        }
+    }
     public override bool Dig_hasty_fighting_position()
     {
         DT = T;
         return base.Dig_hasty_fighting_position();
     }
-
-
-    public IEnumerator Move()
+    public bool CheckMemento()
     {
-        float _Time = 0;
-		
+        if(memento || Now_Action_Point < 5) return false;
 
-        for (int i = 0; i < A_T.Count; i++)
-        {
-            
-            Vector2 PPos = Vector2.zero;
-			Tile PT = null;
-
-			if (Partner != null)
-			{
-				Partner.transform.SetParent(transform.parent);
-				PPos = Partner.transform.localPosition;
-				PT = Partner.transform.parent.GetComponent<Tile>();
-				Partner.Now_Move = true;
-			}
-
-            transform.SetParent(A_T[i].transform);
-            Vector2 Pos = transform.localPosition;
-
-
-            Now_Action_Point -= Now_Move_Point;
-
-            if (_Tile.TileMap[A_T[i].X][A_T[i].Y] == Tile_Manager.Cover_Kind.HalfCover)
-                Now_Action_Point--;
-
-            if (x > A_T[i].X) dir = Direction.left;
-            else if (x < A_T[i].X) dir = Direction.right;
-            else if (y > A_T[i].Y) dir = Direction.down;
-            else if (y < A_T[i].Y) dir = Direction.up;
-            
-            while (_Time < 0.1f)
-            {
-                transform.localPosition = new Vector2(Mathf.Lerp(Pos.x, 0, 10 * _Time), Mathf.Lerp(Pos.y, 0, 10 * _Time));
-				if (Partner != null)
-					Partner.transform.localPosition = new Vector2(Mathf.Lerp(PPos.x, 0, 10 * _Time), Mathf.Lerp(PPos.y, 0, 10 * _Time));
-				DrawActionPoint();
-                yield return null;
-                _Time += Time.deltaTime;
-            }
-            transform.localPosition = new Vector2(0, 0);
-            if (Partner != null)
-                Partner.transform.localPosition = new Vector2(0,0);
-            _Time = 0;
-
-            //View.UnView(x - A_T[i].X, y - A_T[i].Y);
-
-            x = A_T[i].X;
-            y = A_T[i].Y;
-
-			if (Partner != null)
-			{
-				Partner.x = PT.X;
-				Partner.y = PT.Y;
-				Partner.View.x = Partner.x;
-				Partner.View.y = Partner.y;
-				Partner.T = PT;
-                Partner.dir = dir;
-                Partner.Tile_InSighted(Partner);
-                
-				//Partner.Tile_InSighted = null;
-				//Partner.Tile_InSighted = Partner.Tile_InSighted2;
-				//Partner.Tile_InSighted2 = null;
-
-				Partner.View.TestInView();
-			}
-
-            View.x = x;
-            View.y = y;
-			T = A_T[i];
-
-            if (Tile_InSighted != null)
-                Tile_InSighted(this);
-            //Tile_InSighted = null;
-            //Tile_InSighted = Tile_InSighted2;
-            //Tile_InSighted2 = null;
-
-            View.TestInView();
-            if (MeetEnemy)
-            {
-                MeetEnemy = false;
-                break;
-            }
-        }
-
-        A_T.Clear();
-        A_T = null;
-        Now_Move = false;
-        Tile._ReturnOriginal();
-		
-		if (Partner != null)
-		{
-            Partner.Now_Action_Point = Now_Action_Point;
-            Partner.Now_Move = false;
-            if (_Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[Partner.x][Partner.y] != Tile_Manager.Cover_Kind.Default)
-			{
-				Vector2 PPos;
-				Tile PT;
-				if (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default)
-				{
-					Partner.transform.SetParent(_Tile.MY_Tile[x-1][y].transform);
-					Fire_Dir = Direction.up;
-				}else if (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default)
-				{
-					Partner.transform.SetParent(_Tile.MY_Tile[x + 1][y].transform);
-					Fire_Dir = Direction.down;
-				}
-				else if (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default)
-				{
-					Partner.transform.SetParent(_Tile.MY_Tile[x][y - 1].transform);
-					Fire_Dir = Direction.left;
-				}else if (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default)
-				{
-					Partner.transform.SetParent(_Tile.MY_Tile[x][y + 1].transform);
-					Fire_Dir = Direction.right;
-				}
-
-				PPos = Partner.transform.localPosition;
-				PT = Partner.transform.parent.GetComponent<Tile>();
-				Partner.Now_Move = true;
-
-				while (_Time < 0.5f)
-				{
-					Partner.transform.localPosition = new Vector2(Mathf.Lerp(PPos.x, 0, 4 * _Time), Mathf.Lerp(PPos.y, 0, 4 * _Time));
-					yield return null;
-					_Time += Time.deltaTime;
-				}
-
-				Partner.x = PT.X;
-				Partner.y = PT.Y;
-				Partner.View.x = Partner.x;
-				Partner.View.y = Partner.y;
-				Partner.T = PT;
-				Partner.Tile_InSighted(Partner);
-				//Partner.Tile_InSighted = null;
-				//Partner.Tile_InSighted = Partner.Tile_InSighted2;
-				//Partner.Tile_InSighted2 = null;
-				Partner.Now_Move = false;
-
-				Partner.View.TestInView();
-			}
-			
-		}
-			yield return null;
+        pressure = pressure - 50 < 0 ? 0 : pressure - 50;
+        memento = true;
+        Now_Action_Point -= 5;
+        return true;
     }
-   
+    public bool Catch()
+    {
+        if(Now_Action_Point < 1 || Catching) return false;
+
+        CatchFalg = true;
+
+        return true;
+    }
+    public bool Catch(Unit_Manager P)
+    {
+        if(Now_Action_Point < 1 || Catching || !CatchFalg || P.Stuned <= 0) return false;
+
+
+        Now_Action_Point -= 1;
+
+        Catching = true;
+
+        return true;
+    }
+
+    public bool WakeUp()
+    {
+        if(Now_Action_Point < 4 || WakeUpFlag) return false;
+
+        WakeUpFlag = true;
+        return true;
+    }
+
+    public bool WakeUp(Unit_Manager P)
+    {
+         if(Now_Action_Point < 4 || WakeUpFlag || P.Stuned <= 0) return false;
+
+         Now_Action_Point -=4;
+         P.Stuned = 0;
+         return true;
+    }
+    #endregion
+
 }
