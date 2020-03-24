@@ -691,6 +691,7 @@ public class Player_Manager : Unit_Manager {
 
                 Carry_Unit.View.TestInView();
             }
+        }
         yield return null;
     }
     #endregion
@@ -710,6 +711,10 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.EndTurnButton.gameObject.SetActive(false);
         UI_Manager.DigButton.gameObject.SetActive(false);
         UI_Manager.ExpandButton.gameObject.SetActive(false);
+        UI_Manager.CarryButton.gameObject.SetActive(false);
+        UI_Manager.DropButton.gameObject.SetActive(false);
+        UI_Manager.WakeUpButton.gameObject.SetActive(false);
+        UI_Manager.MementoCheckButton.gameObject.SetActive(false);
         for (int i = 0; i < UI_Manager.Weapon.Count; i++)
         {
             if (i < Weapons.Count)
@@ -828,6 +833,10 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.ExpandButton.onClick.RemoveAllListeners();
                 UI_Manager.BackPackButton.onClick.RemoveAllListeners();
                 UI_Manager.ChangeWeaponButton.onClick.RemoveAllListeners();
+                UI_Manager.CarryButton.onClick.RemoveAllListeners();
+                UI_Manager.DropButton.onClick.RemoveAllListeners();
+                UI_Manager.WakeUpButton.onClick.RemoveAllListeners();
+                UI_Manager.MementoCheckButton.onClick.RemoveAllListeners();
 
                 for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)
                 {
@@ -878,7 +887,7 @@ public class Player_Manager : Unit_Manager {
 
                 UI_Manager.AttackToasting = true;
                 StartCoroutine(UI_Manager.BarUpToast(UI_Manager.Attack_Toast, "Attack"));
-                Weapons[ChoosWeapon].Select();
+                Weapons[ChooseWeapon].Select();
             });
             UI_Manager.Item_Button.onClick.AddListener(() =>
             {
@@ -911,7 +920,7 @@ public class Player_Manager : Unit_Manager {
 
             });
             UI_Manager.EndTurnButton.onClick.AddListener(() => { _Input.OnClick_EndTurn(); });
-            UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChoosWeapon].Reload(); });
+            UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChooseWeapon].Reload(); });
             UI_Manager.Action_Button.onClick.AddListener(() =>
             {
                 InitializeButton();
@@ -924,6 +933,10 @@ public class Player_Manager : Unit_Manager {
 
                 UI_Manager.DigButton.gameObject.SetActive(true);
                 UI_Manager.ExpandButton.gameObject.SetActive(true);
+                UI_Manager.CarryButton.gameObject.SetActive(true);
+                UI_Manager.DropButton.gameObject.SetActive(true);
+                UI_Manager.WakeUpButton.gameObject.SetActive(true);
+                UI_Manager.MementoCheckButton.gameObject.SetActive(true);
 
                 UI_Manager.DigButton.onClick.AddListener(() =>
                 {
@@ -971,9 +984,9 @@ public class Player_Manager : Unit_Manager {
 
                 UI_Manager.Weapon[0].onClick.AddListener(() =>
                 {
-                    if (ChoosWeapon == 0 || Now_Action_Point < 1) return;
+                    if (ChooseWeapon == 0 || Now_Action_Point < 1) return;
                     Now_Action_Point--;
-                    ChoosWeapon = 0;
+                    ChooseWeapon = 0;
                     InitializeButton();
                     if (!Now_Move) Tile._ReturnOriginal();
                 });
@@ -984,16 +997,40 @@ public class Player_Manager : Unit_Manager {
                 {
                     UI_Manager.Weapon[1].onClick.AddListener(() =>
                     {
-                        if (ChoosWeapon == 1 || Now_Action_Point < 1) return;
+                        if (ChooseWeapon == 1 || Now_Action_Point < 1) return;
 
                         Now_Action_Point--;
-                        ChoosWeapon = 1;
+                        ChooseWeapon = 1;
                         InitializeButton();
                         if (!Now_Move) Tile._ReturnOriginal();
                     });
                     UI_Manager.Weapon[1].GetComponentInChildren<Text>().text = Weapons[1].Weapon_Name;
                     UI_Manager.Weapon[1].gameObject.SetActive(true);
                 }
+            });
+            UI_Manager.CarryButton.onClick.AddListener(() =>
+            {
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+                Catch();
+            });
+            UI_Manager.DropButton.onClick.AddListener(() =>
+            {
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+                Drop();
+            });
+            UI_Manager.WakeUpButton.onClick.AddListener(() =>
+            {
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+                WakeUp();
+            });
+            UI_Manager.MementoCheckButton.onClick.AddListener(() =>
+            {
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+                CheckMemento();
             });
             UI_Manager._Unit = this;
 
@@ -1015,10 +1052,10 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.Name.text = Name;
         UI_Manager.Posture.gameObject.SetActive(true);
 		UI_Manager._Class.gameObject.SetActive(true);
-        UI_Manager._Clip.text = Weapons[ChoosWeapon].Bullet.ToString() + " / " + Weapons[ChoosWeapon].MaxBullet.ToString();
+        UI_Manager._Clip.text = Weapons[ChooseWeapon].Bullet.ToString() + " / " + Weapons[ChooseWeapon].MaxBullet.ToString();
         UI_Manager.EndTurnButton.gameObject.SetActive(true);
         UI_Manager.PosImageChange(_Posture);
-        Weapons[ChoosWeapon].Select();
+        Weapons[ChooseWeapon].Select();
 
 		switch (_Posture)
         {
@@ -1075,11 +1112,11 @@ public class Player_Manager : Unit_Manager {
         UI_Manager.EndTurnButton.gameObject.SetActive(false);
         UI_Manager.DigButton.gameObject.SetActive(false);
         UI_Manager.ExpandButton.gameObject.SetActive(false);
-        if(Weapons[ChoosWeapon] != null)
-        Weapons[ChoosWeapon].Unselect();
+        if(Weapons[ChooseWeapon] != null)
+        Weapons[ChooseWeapon].Unselect();
         else{
-            Weapons.RemoveAt(ChoosWeapon);
-            ChoosWeapon = 0;
+            Weapons.RemoveAt(ChooseWeapon);
+            ChooseWeapon = 0;
         }
 		
 		for (int i = 0; i < UI_Manager.Weapon_Button.Count; i++)

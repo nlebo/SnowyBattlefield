@@ -47,6 +47,10 @@ public class UI_MANAGER : MonoBehaviour {
 	public Button ExpandButton;
 	public Button BackPackButton;
 	public Button ChangeWeaponButton;
+	public Button CarryButton;
+	public Button DropButton;
+	public Button WakeUpButton;
+	public Button MementoCheckButton;
 
 	[Header("Image")]
     public Image Delete_AP_Bar;

@@ -36,7 +36,7 @@ public class Unit_Manager : MonoBehaviour {
 	public int							Now_Action_Point;
 	public int							Now_Move_Point;
 	public int							Move_Point = 1;
-	public int							ChoosWeapon = 0;
+	public int							ChooseWeapon = 0;
 	public int							Set = 0;
 	public int							x, y;
 	public int							Char_Num;
