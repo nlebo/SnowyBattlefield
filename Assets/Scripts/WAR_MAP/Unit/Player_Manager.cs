@@ -9,11 +9,9 @@ public class Player_Manager : Unit_Manager {
 	#region VARIABLE
 
 	
-
+    Unit_Manager            Carry_Unit = null;
     List<Tile>              A_T = null;
     Tile DT;
-    
-    
     public Input_Manager    _Input;
     GameObject              NowChose;
 	Color                   original;
@@ -146,9 +144,10 @@ public class Player_Manager : Unit_Manager {
                         Input_Manager.Highlighted();
                         Input_Manager.Highlighted = null;
 
-                        if (T.transform.Find("Player(Clone)") != null)
+                        if (_T.transform.Find("Player(Clone)") != null)
                         {
-                            
+                            if(WakeUpFlag) WakeUp(_T.transform.Find("Player(Clone)").GetComponent<Unit_Manager>());
+                            else if(CatchFalg) Catch(_T.transform.Find("Player(Clone)").GetComponent<Unit_Manager>());
                         }
                         WakeUpFlag = false;
                         CatchFalg = false;
@@ -475,7 +474,9 @@ public class Player_Manager : Unit_Manager {
         {
 
             Vector2 PPos = Vector2.zero;
+            Vector2 CPos = Vector2.zero;
             Tile PT = null;
+            Tile CT = null;
 
             if (Partner != null)
             {
@@ -483,6 +484,13 @@ public class Player_Manager : Unit_Manager {
                 PPos = Partner.transform.localPosition;
                 PT = Partner.transform.parent.GetComponent<Tile>();
                 Partner.Now_Move = true;
+            }
+            if(Carry_Unit != null)
+            {
+                Carry_Unit.transform.SetParent(transform.parent);
+                CPos = Partner.transform.localPosition;
+                CT = Partner.transform.parent.GetComponent<Tile>();
+                Carry_Unit.Now_Move = true;
             }
 
             transform.SetParent(A_T[i].transform);
@@ -533,6 +541,22 @@ public class Player_Manager : Unit_Manager {
                 //Partner.Tile_InSighted2 = null;
 
                 Partner.View.TestInView();
+            }
+            if (Carry_Unit != null)
+            {
+                Carry_Unit.x = CT.X;
+                Carry_Unit.y = CT.Y;
+                Carry_Unit.View.x = Carry_Unit.x;
+                Carry_Unit.View.y = Carry_Unit.y;
+                Carry_Unit.T = CT;
+                Carry_Unit.dir = dir;
+                Carry_Unit.Tile_InSighted(Carry_Unit);
+
+                //Partner.Tile_InSighted = null;
+                //Partner.Tile_InSighted = Partner.Tile_InSighted2;
+                //Partner.Tile_InSighted2 = null;
+
+                Carry_Unit.View.TestInView();
             }
 
             View.x = x;
@@ -613,6 +637,60 @@ public class Player_Manager : Unit_Manager {
             }
 
         }
+        if (Carry_Unit != null)
+        {
+            Carry_Unit.Now_Action_Point = Now_Action_Point;
+            Carry_Unit.Now_Move = false;
+            if (_Tile.TileMap[Carry_Unit.x][Carry_Unit.y] != Tile_Manager.Cover_Kind.CanNot && _Tile.TileMap[Carry_Unit.x][Carry_Unit.y] != Tile_Manager.Cover_Kind.Default)
+            {
+                Vector2 CPos;
+                Tile CT;
+                if (_Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x - 1][y] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Carry_Unit.transform.SetParent(_Tile.MY_Tile[x - 1][y].transform);
+                    //Fire_Dir = Direction.up;
+                }
+                else if (_Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x + 1][y] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x + 1][y].transform);
+                    //Fire_Dir = Direction.down;
+                }
+                else if (_Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y - 1] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x][y - 1].transform);
+                    //Fire_Dir = Direction.left;
+                }
+                else if (_Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.CanNot || _Tile.TileMap[x][y + 1] == Tile_Manager.Cover_Kind.Default)
+                {
+                    Partner.transform.SetParent(_Tile.MY_Tile[x][y + 1].transform);
+                    //Fire_Dir = Direction.right;
+                }
+
+                CPos = Partner.transform.localPosition;
+                CT = Partner.transform.parent.GetComponent<Tile>();
+                Carry_Unit.Now_Move = true;
+
+                while (_Time < 0.5f)
+                {
+                    Carry_Unit.transform.localPosition = new Vector2(Mathf.Lerp(CPos.x, 0, 4 * _Time), Mathf.Lerp(CPos.y, 0, 4 * _Time));
+                    yield return null;
+                    _Time += Time.deltaTime;
+                }
+
+                Carry_Unit.x = CT.X;
+                
+                Carry_Unit.y = CT.Y;
+                Carry_Unit.View.x = Carry_Unit.x;
+                Carry_Unit.View.y = Carry_Unit.y;
+                Carry_Unit.T = CT;
+                Carry_Unit.Tile_InSighted(Carry_Unit);
+                //Partner.Tile_InSighted = null;
+                //Partner.Tile_InSighted = Partner.Tile_InSighted2;
+                //Partner.Tile_InSighted2 = null;
+                Carry_Unit.Now_Move = false;
+
+                Carry_Unit.View.TestInView();
+            }
         yield return null;
     }
     #endregion
@@ -1197,12 +1275,28 @@ public class Player_Manager : Unit_Manager {
     }
     public bool Catch(Unit_Manager P)
     {
-        if(Now_Action_Point < 1 || Catching || !CatchFalg || P.Stuned <= 0) return false;
-
+        if(Now_Action_Point < 1 || Catching || !CatchFalg || P.Stuned <= 0) 
+        {
+            CatchFalg = false;
+            return false;
+        } 
 
         Now_Action_Point -= 1;
 
+        CatchFalg = false;
         Catching = true;
+        Carry_Unit = P;
+
+        return true;
+    }
+
+    public bool Drop()
+    {
+        if(Now_Action_Point < 1 || !Catching || Carry_Unit == null) return false;
+
+        Now_Action_Point -=1;
+        Catching = false;
+        Carry_Unit = null;
 
         return true;
     }
@@ -1217,9 +1311,13 @@ public class Player_Manager : Unit_Manager {
 
     public bool WakeUp(Unit_Manager P)
     {
-         if(Now_Action_Point < 4 || WakeUpFlag || P.Stuned <= 0) return false;
+         if(Now_Action_Point < 4 || WakeUpFlag || P.Stuned <= 0)
+        {
+            WakeUpFlag = false;
+            return false;
+        }
 
-         Now_Action_Point -=4;
+        Now_Action_Point -=4;
          P.Stuned = 0;
          return true;
     }

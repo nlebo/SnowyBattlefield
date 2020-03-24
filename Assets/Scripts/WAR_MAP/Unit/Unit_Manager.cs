@@ -10,6 +10,8 @@ public class Unit_Manager : MonoBehaviour {
 	#region VARIABLE
 	protected Tile_Manager				_Tile;
 	protected UI_MANAGER				UI_Manager;
+
+	
 	public Tile							T;
 	public View_Manager					View;
 	public Inventory_Manager			Inventory;
