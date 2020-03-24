@@ -29,10 +29,10 @@ public class Player_Manager : Unit_Manager {
     bool                    CatchFalg = false;
     bool                    Catching = false;
     bool                    WakeUpFlag = false;
+    bool                    LastPositioning = false;
     public bool             MeetEnemy = false;
 
     private float           enter;
-
     #endregion
 
     #region UI_VARIABLE
@@ -136,7 +136,7 @@ public class Player_Manager : Unit_Manager {
             {
                 Tile _T = hit.transform.GetComponent<Tile>();
 
-                if (Mathf.Abs(_T.X - T.X) + Mathf.Abs(_T.Y - T.Y) == 1)
+                if (Mathf.Abs(_T.X - T.X) <= 1 && Mathf.Abs(_T.Y - T.Y) <= 1)
                 {
                     _T.HighLight(1);
                     if (Input.GetMouseButtonDown(0))
@@ -156,6 +156,32 @@ public class Player_Manager : Unit_Manager {
             }
         }
 
+        if(LastPositioning)
+        {
+            if (Input_Manager.Highlighted != null)
+            {
+                Input_Manager.Highlighted();
+                Input_Manager.Highlighted = null;
+            }
+            if (hit.transform != null && hit.transform.tag == "Tile")
+            {
+                Tile _T = hit.transform.GetComponent<Tile>();
+
+                if (Mathf.Abs(_T.X - T.X) + Mathf.Abs(_T.Y - T.Y) == 1)
+                {
+                    _T.HighLight(1);
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        Input_Manager.Highlighted();
+                        Input_Manager.Highlighted = null;
+
+                        ChangeDir(_T);
+                        _Input.OnClick_EndTurn();
+                        LastPositioning = false;
+                    }
+                }
+            }
+        }
         #endregion
 
         #region A_Star(For Move)
@@ -908,18 +934,23 @@ public class Player_Manager : Unit_Manager {
                 UI_Manager.Item[0].onClick.AddListener(() =>
                 {
                     Items[0].Use();
-                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
+                    StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast, "Item"));
                 });
                 if (Items.Count > 1)
                     UI_Manager.Item[1].onClick.AddListener(() =>
                     {
                         Items[1].Use();
-                        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast,"Item"));
+                        StartCoroutine(UI_Manager.BarDownToast(UI_Manager.Item_Toast, "Item"));
                     });
 
 
             });
-            UI_Manager.EndTurnButton.onClick.AddListener(() => { _Input.OnClick_EndTurn(); });
+            UI_Manager.EndTurnButton.onClick.AddListener(() =>
+            {
+                InitializeButton();
+                if (!Now_Move) Tile._ReturnOriginal();
+                LastPositioning = true;
+            });
             UI_Manager.ReloadButton.onClick.AddListener(() => { Weapons[ChooseWeapon].Reload(); });
             UI_Manager.Action_Button.onClick.AddListener(() =>
             {
@@ -1182,7 +1213,17 @@ public class Player_Manager : Unit_Manager {
         }
         base.Death();
     }
+    public void ChangeDir(Tile _T)
+    {
+        if(_T.X > x) dir = Direction.right;
+        else if(_T.X < x) dir = Direction.left;
+        else if(_T.Y > y) dir = Direction.up;
+        else if(_T.Y < y) dir = Direction.down;
 
+        if (Tile_InSighted != null)
+            Tile_InSighted(this);
+        View.TestInView();
+    }
 
     #region  Action functions
     public bool Change_Posture(Player_Manager.Posture CPosture)
