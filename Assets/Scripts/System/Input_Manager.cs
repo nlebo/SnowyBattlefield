@@ -31,8 +31,16 @@ public class Input_Manager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
-        pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Plane plane = new Plane(Vector3.forward, transform.position + (Quaternion.AngleAxis(45,Vector3.right) * new Vector3(0,155,0)));
+        
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        float enter = 0;
+        if(plane.Raycast(ray, out enter))
+        {
+            Debug.Log("distance " + enter);
+            Debug.DrawRay(ray.origin, ray.direction * enter, Color.green);
+            pos = new Vector2(ray.GetPoint(enter).x,ray.GetPoint(enter).y);
+        }
         hit = Physics2D.Raycast(pos, Vector2.zero, 0f);
         hit_Player = Physics2D.Raycast(pos, Vector2.zero, 0f, layerMask);
         hit_Tile = Physics2D.Raycast(pos, Vector2.zero, 0f, layerMask_Tile);

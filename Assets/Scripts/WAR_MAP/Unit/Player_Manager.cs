@@ -817,7 +817,7 @@ public class Player_Manager : Unit_Manager {
     {
         Board_Manager.m_Board_Manager.TurnFlag = 0;
         base.TurnOn();
-        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+        Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y + 110, -10);
 
         if(Stuned > 0)
         {

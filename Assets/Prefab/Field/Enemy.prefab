@@ -130,12 +130,13 @@ MonoBehaviour:
   Now_Action_Point: 0
   Now_Move_Point: 0
   Move_Point: 1
-  ChoosWeapon: 0
+  ChooseWeapon: 0
   Set: 0
   x: 0
   y: 0
   Char_Num: 0
   Painkiller_Count: 0
+  CoverPercent: 0
   aim: 40
   DynamicVisualAcuity: 0
   Health: 100

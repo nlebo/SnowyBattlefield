@@ -11,7 +11,9 @@ public class View_Manager2 : MonoBehaviour
     private Vector3 origin;
     private float fov;
 
-    public Unit_Manager _Unit;
+    private float AddAngle;
+
+    //public Unit_Manager Unit;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +21,7 @@ public class View_Manager2 : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         //Evolve = new Vector3(0,-1,1);
         fov = 90f;
-        _Unit = transform.parent.GetComponent<Unit_Manager>();
+        //Unit = transform.parent.GetComponent<Unit_Manager>();
 
     }
 
@@ -27,7 +29,7 @@ public class View_Manager2 : MonoBehaviour
     void LateUpdate()
     {
         transform.position = Vector3.zero;
-        origin = _Unit.transform.position;
+        origin = Vector3.zero;
         int rayCount = 50;
         float angle = 0f;
         float angleIncrease = fov / rayCount;
@@ -37,7 +39,11 @@ public class View_Manager2 : MonoBehaviour
         Vector3[] Vertices = new Vector3[rayCount +1 +1];
         Vector2[] uv = new Vector2[Vertices.Length];
         int[] triangles = new int[rayCount * 3];
+        
+        Vector2 v2 = new Vector2(Input_Manager.m_InputManager.pos.x -transform.position.x,Input_Manager.m_InputManager.pos.y - transform.position.y);
 
+        AddAngle = Mathf.Atan2(v2.y,v2.x) * Mathf.Rad2Deg;
+        AddAngle += fov / 2;
         Vertices[0] = origin;
 
         int VertexIndex = 1;
@@ -46,12 +52,12 @@ public class View_Manager2 : MonoBehaviour
         {
             Vector3 vertex;
             Evolve.x = angle3d;
-            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance,layerMask);
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle + AddAngle), viewDistance,layerMask);
             
-            Debug.DrawRay(origin,GetVectorFromAngle(angle),Color.red,0.1f);
+            Debug.DrawRay(origin,GetVectorFromAngle(angle+ AddAngle),Color.red,0.1f);
             if (raycastHit2D.collider == null)
             {
-                vertex = origin + GetVectorFromAngle(angle) * viewDistance;
+                vertex = origin + GetVectorFromAngle(angle + AddAngle) * viewDistance;
             }
             else
             {

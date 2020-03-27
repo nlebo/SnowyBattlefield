@@ -13,6 +13,16 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
 	protected int MaxReload = 5;
 	Input_Manager _Input;
+
+	[SerializeField]private LayerMask layerMask;
+
+    //public Vector3 Evolve;
+    private Mesh mesh;
+    private Vector3 origin;
+    private float fov;
+	private float AddAngle;
+	private bool _MakeAngle = false;
+	
 	// Use this for initialization
 	protected void Start()
 	{
@@ -27,11 +37,19 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
 		_Input = Camera.main.GetComponent<Input_Manager>();
 		_UI = GameObject.Find("Canvas").GetComponent<UI_MANAGER>();
+
+		
+		
 	}
 
 	// Update is called once per frame
 	void Update() {
 		if (!transform.parent.CompareTag("Player")) return;
+
+		if(Btn1)
+		{
+			MakeAngle();
+		}
 		if (Btn3 || Btn4)
 		{
 			Cursor_Manager.m_Cursor_Manager.SetCursor(_UI.Cursors[0]);
@@ -82,8 +100,12 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
                 }
             }
-
-		}
+            if (Btn1)
+            {
+                Btn1 = false;
+                _MakeAngle = true;
+            }
+        }
 	}
 
 
@@ -105,10 +127,14 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 		_UI.Weapon_Button[4].onClick.AddListener(BTN5);
 	}
 
-	public override void BTN1()
-	{
-		if (Unit.Now_Action_Point < 4 || Action) return;
+    public override void BTN1()
+    {
+        if (Unit.Now_Action_Point < 4 || Action || _MakeAngle) return;
 
+
+        mesh = new Mesh();
+        GetComponent<MeshFilter>().mesh = mesh;
+        fov = 90f;
 		Action = true;
 		Btn1 = true;
 
@@ -274,6 +300,68 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 		Action = false;
 	}
 
+
+    void MakeAngle()
+    {
+        transform.position = Vector3.zero;
+        origin = Unit.transform.position;
+        int rayCount = 50;
+        float angle = 0f;
+        float angleIncrease = fov / rayCount;
+        // float angle3dIncrease = 2.8f / rayCount;
+        // float angle3d = -1.4f;
+        float viewDistance = 12;
+        Vector3[] Vertices = new Vector3[rayCount + 1 + 1];
+        Vector2[] uv = new Vector2[Vertices.Length];
+        int[] triangles = new int[rayCount * 3];
+
+
+		Vector2 v2 = new Vector2(Input_Manager.m_InputManager.pos.x -transform.position.x,Input_Manager.m_InputManager.pos.y - transform.position.y);
+
+        AddAngle = Mathf.Atan2(v2.y,v2.x) * Mathf.Rad2Deg;
+        AddAngle += fov / 2;
+        Vertices[0] = origin;
+
+        int VertexIndex = 1;
+        int triangleIndex = 0;
+        for (int i = 0; i <= rayCount; i++)
+        {
+            Vector3 vertex;
+            //Evolve.x = angle3d;
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle + AddAngle), viewDistance,layerMask);
+            
+            Debug.DrawRay(origin,GetVectorFromAngle(angle + AddAngle),Color.red,0.1f);
+            if (raycastHit2D.collider == null)
+            {
+                vertex = origin + GetVectorFromAngle(angle + AddAngle) * viewDistance;
+            }
+            else
+            {
+                vertex = raycastHit2D.point;
+                
+                
+            }
+
+            Vertices[VertexIndex] = vertex;
+
+            if (i > 0)
+            {
+                triangles[triangleIndex + 0] = 0;
+                triangles[triangleIndex + 1] = VertexIndex - 1;
+                triangles[triangleIndex + 2] = VertexIndex;
+
+                triangleIndex += 3;
+            }
+
+            VertexIndex++;
+            angle -= angleIncrease;
+            //angle3d += angle3dIncrease;
+        }
+
+        mesh.vertices = Vertices;
+        mesh.uv = uv;
+        mesh.triangles = triangles;
+	}
 	IEnumerator _BTN3(Unit_Manager _Unit)
 	{
 		for (int i = 0; i < 50; i++)
@@ -309,4 +397,15 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 		Btn4 = false;
 		yield return null;
 	}
+
+	Vector3 GetVectorFromAngle(float angle)
+    {
+        float angleRad = angle * (Mathf.PI/180f);
+        return new Vector3(Mathf.Cos(angleRad),Mathf.Sin(angleRad));
+    }
+
+    public void SetOrigin(Vector3 origin)
+    {
+        this.origin = origin;
+    }
 }

@@ -63,7 +63,7 @@ public class Tile_Manager : MonoBehaviour {
         }
 
 
-        transform.Rotate(new Vector3(-45, 0, -45));
+        transform.Rotate(new Vector3(0, 0, -45));
         
     }
 }
