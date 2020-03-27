@@ -42,8 +42,8 @@ public class View_Manager2 : MonoBehaviour
         
         Vector2 v2 = new Vector2(Input_Manager.m_InputManager.pos.x -transform.position.x,Input_Manager.m_InputManager.pos.y - transform.position.y);
 
-        AddAngle = Mathf.Atan2(v2.y,v2.x) * Mathf.Rad2Deg;
-        AddAngle += fov / 2;
+        AddAngle = Quaternion.FromToRotation(Vector3.up, transform.position - new Vector3(Input_Manager.m_InputManager.pos.x,Input_Manager.m_InputManager.pos.y,0)).eulerAngles.z;
+        AddAngle -= fov / 2;
         Vertices[0] = origin;
 
         int VertexIndex = 1;

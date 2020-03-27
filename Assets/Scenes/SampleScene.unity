@@ -3609,6 +3609,7 @@ MonoBehaviour:
   pos: {x: 0, y: 0}
   Selected: {fileID: 0}
   DragItem: {fileID: 0}
+  y: 155
 --- !u!1 &521083886
 GameObject:
   m_ObjectHideFlags: 0

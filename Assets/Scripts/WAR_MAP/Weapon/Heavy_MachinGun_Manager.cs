@@ -102,6 +102,8 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
             }
             if (Btn1)
             {
+				Unit.Now_Action_Point -= 4;
+				
                 Btn1 = false;
                 _MakeAngle = true;
             }
@@ -130,8 +132,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
     public override void BTN1()
     {
         if (Unit.Now_Action_Point < 4 || Action || _MakeAngle) return;
-
-
+		
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         fov = 90f;
@@ -315,11 +316,13 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
         Vector2[] uv = new Vector2[Vertices.Length];
         int[] triangles = new int[rayCount * 3];
 
+		Vector2 To = Input_Manager.m_InputManager.pos;
+		Vector2 From = Unit.transform.position;
+	
+	
+        AddAngle = Quaternion.FromToRotation(Vector3.up, From - To).eulerAngles.z;
 
-		Vector2 v2 = new Vector2(Input_Manager.m_InputManager.pos.x -transform.position.x,Input_Manager.m_InputManager.pos.y - transform.position.y);
-
-        AddAngle = Mathf.Atan2(v2.y,v2.x) * Mathf.Rad2Deg;
-        AddAngle += fov / 2;
+		AddAngle -= fov / 2;
         Vertices[0] = origin;
 
         int VertexIndex = 1;

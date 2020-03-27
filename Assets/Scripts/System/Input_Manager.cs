@@ -19,6 +19,8 @@ public class Input_Manager : MonoBehaviour {
 
     public ItemUI_Manager DragItem;
 
+    public float y = 0;
+
     int layerMask = 1 << 8;
     int layerMask_Tile = 1 << 8;
 
@@ -31,14 +33,12 @@ public class Input_Manager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Plane plane = new Plane(Vector3.forward, transform.position + (Quaternion.AngleAxis(45,Vector3.right) * new Vector3(0,155,0)));
+        Plane plane = new Plane(Vector3.forward, transform.position + (Quaternion.AngleAxis(45,Vector3.right) * new Vector3(0,y,0)));
         
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         float enter = 0;
         if(plane.Raycast(ray, out enter))
         {
-            Debug.Log("distance " + enter);
-            Debug.DrawRay(ray.origin, ray.direction * enter, Color.green);
             pos = new Vector2(ray.GetPoint(enter).x,ray.GetPoint(enter).y);
         }
         hit = Physics2D.Raycast(pos, Vector2.zero, 0f);
