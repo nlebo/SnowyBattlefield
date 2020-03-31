@@ -46,7 +46,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 	void Update() {
 		if (!transform.parent.CompareTag("Player")) return;
 
-		if(Btn1)
+		if(Btn1 || Btn2)
 		{
 			MakeAngle();
 		}
@@ -100,12 +100,16 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
                 }
             }
-            if (Btn1)
+            if (Btn1 || Btn2)
             {
-				Unit.Now_Action_Point -= 4;
+				Unit.Now_Action_Point = Btn1 ? Unit.Now_Action_Point - 4 : Unit.Now_Action_Point;
 				
+
+
                 Btn1 = false;
+				Btn2 = false;
                 _MakeAngle = true;
+				Action=false;
             }
         }
 	}
@@ -135,15 +139,17 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 		
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        fov = 90f;
+        fov = 40f;
 		Action = true;
 		Btn1 = true;
 
 	}
 	public override void BTN2()
 	{
-		if (Unit.Now_Action_Point < 5 || Action) return;
+		if (Unit.Now_Action_Point < 5 || Action || !_MakeAngle) return;
 
+		Unit.Now_Action_Point -=5;
+		_MakeAngle = false;
 		Action = true;
 		Btn2 = true;
 
@@ -311,7 +317,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
         float angleIncrease = fov / rayCount;
         // float angle3dIncrease = 2.8f / rayCount;
         // float angle3d = -1.4f;
-        float viewDistance = 12;
+        float viewDistance = 20;
         Vector3[] Vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[Vertices.Length];
         int[] triangles = new int[rayCount * 3];
@@ -320,9 +326,10 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 		Vector2 From = Unit.transform.position;
 	
 	
-        AddAngle = Quaternion.FromToRotation(Vector3.up, From - To).eulerAngles.z;
-
-		AddAngle -= fov / 2;
+        //AddAngle = Quaternion.FromToRotation(Vector3.up, To - From).eulerAngles.z;
+		Vector3 v = To - From;
+    	AddAngle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+		AddAngle += fov / 2;
         Vertices[0] = origin;
 
         int VertexIndex = 1;
@@ -341,8 +348,6 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
             else
             {
                 vertex = raycastHit2D.point;
-                
-                
             }
 
             Vertices[VertexIndex] = vertex;
