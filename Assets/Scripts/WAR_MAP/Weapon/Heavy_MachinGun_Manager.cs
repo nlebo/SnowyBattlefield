@@ -18,11 +18,15 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
     //public Vector3 Evolve;
     private Mesh mesh;
+
+	private float ShotRange;
     private Vector3 origin;
     private float fov;
 	private float AddAngle;
 	private bool _MakeAngle = false;
-	
+
+	private List<Unit_Manager> CheckPerson;
+
 	// Use this for initialization
 	protected void Start()
 	{
@@ -37,7 +41,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
 		_Input = Camera.main.GetComponent<Input_Manager>();
 		_UI = GameObject.Find("Canvas").GetComponent<UI_MANAGER>();
-
+		CheckPerson = new List<Unit_Manager>();
 		
 		
 	}
@@ -58,15 +62,25 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
             if (hit.transform != null && hit.transform.tag == "Enemy")
             {
-                Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
-
-                if (!_UI.HitRate.gameObject.activeInHierarchy)
+                CheckShot();
+                int i = 0;
+                for (i = 0; i < CheckPerson.Count; i++)
                 {
-                    _UI.HitRate.gameObject.SetActive(true);
-                    _UI.HitRateText.text = _Unit.GetHitRate(this).ToString() + "%";
+                    if (CheckPerson[i].transform == hit.transform)
+                        break;
+                }
+
+                if (i != CheckPerson.Count)
+                {
+                    Unit_Manager _Unit = hit.transform.GetComponent<Unit_Manager>();
+
+                    if (!_UI.HitRate.gameObject.activeInHierarchy)
+                    {
+                        _UI.HitRate.gameObject.SetActive(true);
+                        _UI.HitRateText.text = _Unit.GetHitRate(this).ToString() + "%";
+                    }
                 }
             }
-
             else
             {
                 if (_UI.HitRate.gameObject.activeInHierarchy) _UI.HitRate.gameObject.SetActive(false);
@@ -140,6 +154,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         fov = 40f;
+		ShotRange = 20;
 		Action = true;
 		Btn1 = true;
 
@@ -317,7 +332,7 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
         float angleIncrease = fov / rayCount;
         // float angle3dIncrease = 2.8f / rayCount;
         // float angle3d = -1.4f;
-        float viewDistance = 20;
+        float viewDistance = ShotRange;
         Vector3[] Vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[Vertices.Length];
         int[] triangles = new int[rayCount * 3];
@@ -337,19 +352,8 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
         for (int i = 0; i <= rayCount; i++)
         {
             Vector3 vertex;
-            //Evolve.x = angle3d;
-            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle + AddAngle), viewDistance,layerMask);
-            
-            Debug.DrawRay(origin,GetVectorFromAngle(angle + AddAngle),Color.red,0.1f);
-            if (raycastHit2D.collider == null)
-            {
-                vertex = origin + GetVectorFromAngle(angle + AddAngle) * viewDistance;
-            }
-            else
-            {
-                vertex = raycastHit2D.point;
-            }
 
+			vertex = origin + GetVectorFromAngle(angle + AddAngle) * viewDistance;
             Vertices[VertexIndex] = vertex;
 
             if (i > 0)
@@ -363,12 +367,34 @@ public class Heavy_MachinGun_Manager : Weapon_Manager {
 
             VertexIndex++;
             angle -= angleIncrease;
-            //angle3d += angle3dIncrease;
+            
         }
 
         mesh.vertices = Vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
+	}
+	
+	void CheckShot()
+	{
+		int rayCount = 50;
+        float angle = 0f;
+        float angleIncrease = fov / rayCount;
+        float viewDistance = ShotRange;
+		CheckPerson.Clear();
+		for(int i =0; i<= rayCount ; i++)
+		{
+			RaycastHit[] Hits;
+			Hits = Physics.RaycastAll(origin,GetVectorFromAngle(angle + AddAngle),viewDistance,layerMask);
+
+			for(int j =0; j < Hits.Length;j++)
+			{
+				if(Hits[j].collider.tag == "Enemy")
+				{
+					CheckPerson.Add(Hits[j].collider.GetComponent<Unit_Manager>());
+				}
+			}
+		}
 	}
 	IEnumerator _BTN3(Unit_Manager _Unit)
 	{
